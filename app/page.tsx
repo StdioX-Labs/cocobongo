@@ -1,272 +1,340 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useState, useMemo } from "react";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const weeklyProgram = [
+  // Get current week date range and daily programs
+  const weekDates = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    // Get Monday of current week
+    const monday = new Date(now);
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // If Sunday, go back 6 days, else go to Monday
+    monday.setDate(now.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+
+    // Get Sunday of current week
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    // Format dates
+    const formatDate = (date: Date) => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return {
+        short: `${months[date.getMonth()]} ${date.getDate()}`,
+        full: `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`,
+        day: days[date.getDay()]
+      };
+    };
+
+    // Generate all days of the week with their dates
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      weekDays.push({
+        date,
+        formatted: formatDate(date)
+      });
+    }
+
+    return {
+      monday,
+      sunday,
+      mondayFormatted: formatDate(monday).short,
+      sundayFormatted: formatDate(sunday).short,
+      weekRange: `${formatDate(monday).short} - ${formatDate(sunday).short}`,
+      year: now.getFullYear(),
+      days: weekDays
+    };
+  }, []);
+
+  // Daily program details
+  const dailyPrograms = [
     {
-      day: "MONDAY",
-      event: "SENSATIONAL KARAOKE",
-      host: "KOWA THE GREAT",
+      day: 'Monday',
+      title: 'Sensational Karaoke',
+      host: 'Kowa the Great',
+      description: 'Sing your heart out with Kowa the Great! Wide song selection and special drink offers.',
+      highlights: ['Live karaoke', 'Pro sound system', 'Drink specials']
     },
     {
-      day: "TUESDAY",
-      event: "WINE & DINE",
-      host: "",
+      day: 'Tuesday',
+      title: 'Wine & Dine',
+      host: 'Chef\'s Special',
+      description: 'Elegant evening of fine wines and gourmet cuisine. Perfect for date nights.',
+      highlights: ['Premium wines', 'Gourmet menu', 'Acoustic music']
     },
     {
-      day: "WEDNESDAY",
-      event: "WET & WILD",
-      host: "DJ RICKY",
+      day: 'Wednesday',
+      title: 'Wet & Wild',
+      host: 'DJ Ricky',
+      description: 'Mid-week madness with DJ Ricky! Electrifying beats and high-energy vibes.',
+      highlights: ['DJ Ricky', 'Drink specials', 'Dance floor energy']
     },
     {
-      day: "THURSDAY",
-      event: "AFRO PIANO",
-      host: "DJ RICKY",
+      day: 'Thursday',
+      title: 'Afro Piano Night',
+      host: 'DJ Ricky',
+      description: 'Groove to smooth Afro Piano sounds. Soulful African beats and piano melodies.',
+      highlights: ['Afro Piano', 'Soulful vibes', 'All night dancing']
     },
     {
-      day: "FRIDAY",
-      event: "BOOTY BUM",
-      host: "DJ MUFASA | MC KONKI",
+      day: 'Friday',
+      title: 'Booty Bum Friday',
+      host: 'DJ Mufasa & MC Konki',
+      description: 'The legendary weekend kickoff! Hip-hop, dancehall, and Afrobeat all night.',
+      highlights: ['DJ Mufasa & MC Konki', 'Hip-hop & Dancehall', 'VIP service']
     },
     {
-      day: "SATURDAY",
-      event: "DJ RAMOZ",
-      host: "HALLOWEEN MASQURADE PARTY",
+      day: 'Saturday',
+      title: 'Halloween Masquerade Party',
+      host: 'DJ Ramoz',
+      description: 'Special Halloween Masquerade with DJ Ramoz. Costume contests and spine-tingling beats.',
+      highlights: ['Masquerade theme', 'Costume contest', 'DJ Ramoz']
     },
     {
-      day: "SUNDAY",
-      event: "AFRO SPOOK",
-      host: "MVAZI X TEEKAY X SAUL BUCHO",
-    },
+      day: 'Sunday',
+      title: 'Afro Spook Sunday',
+      host: 'Mvazi, Teekay & Saul Bucho',
+      description: 'Triple DJ lineup with the best Afrobeat and Amapiano. End your week on a high note.',
+      highlights: ['3 DJs', 'Afrobeat & Amapiano', 'Sunday vibes']
+    }
   ];
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-2xl border-b border-white/5 shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-orange-500/5"></div>
-        <div className="container mx-auto px-6 relative">
-          <div className="flex items-center justify-between h-24">
-            {/* Logo */}
-            <a href="#home" className="group flex items-center space-x-3 relative">
-              <div className="relative flex items-center space-x-3">
-                {/* Teardrop container that extends to navbar top */}
-                <div className="relative -mt-6 w-10 h-24 transform group-hover:scale-105 transition-transform duration-300">
-                  {/* White teardrop shape with flat top and smooth rounded bottom */}
-                  <div
-                    className="absolute inset-0 bg-white shadow-xl"
-                    style={{
-                      borderRadius: '0 0 50% 50%',
-                      clipPath: 'path("M 0 0 L 40 0 L 40 56 Q 40 68 35 74 Q 30 80 20 80 Q 10 80 5 74 Q 0 68 0 56 Z")',
-                    }}
-                  >
-                    {/* Logo positioned in the circular part with more padding */}
-                    <div className="absolute inset-0 flex items-end justify-center pb-5 px-2">
-                      <Image
-                        src="/logo.png"
-                        alt="Club Cocobongo Logo"
-                        width={56}
-                        height={56}
-                        className="object-contain"
-                      />
-                    </div>
+      {/* Luxurious Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+        {/* Premium Glass Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/60 backdrop-blur-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/[0.03] via-transparent to-orange-500/[0.03]"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent"></div>
+
+        {/* Subtle Top Accent */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+
+        <div className="container mx-auto px-6 lg:px-8 relative">
+          <div className="flex items-center justify-between h-20 lg:h-24">
+            {/* Refined Logo */}
+            <a href="#home" className="group flex items-center space-x-3 relative z-10">
+              <div className="relative flex items-center space-x-3 lg:space-x-4">
+                {/* Logo with Elegant Hover */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/10 rounded-2xl blur-xl transition-all duration-700"></div>
+                  <div className="relative transform group-hover:scale-105 group-hover:rotate-3 transition-all duration-700 ease-out">
+                    <Image
+                      src="/logo02.png"
+                      alt="Club Cocobongo Logo"
+                      width={56}
+                      height={56}
+                      className="object-contain drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]"
+                    />
                   </div>
                 </div>
-                <div className="text-xl tracking-tight">
-                  <div className="font-black text-white leading-none">CLUB</div>
-                  <div className="font-black bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 bg-clip-text text-transparent leading-none">COCOBONGO</div>
+
+                {/* Elegant Typography */}
+                <div className="text-lg lg:text-xl tracking-tight">
+                  <div className="font-bold text-white/90 leading-none tracking-wider transition-colors duration-300 group-hover:text-white">
+                    CLUB
+                  </div>
+                  <div className="font-black bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 bg-clip-text text-transparent leading-none tracking-wide">
+                    COCOBONGO
+                  </div>
                 </div>
               </div>
             </a>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              <a href="#home" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all group">
-                <span className="relative z-10">Home</span>
-                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200"></div>
-              </a>
-              <a href="#events" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all group">
-                <span className="relative z-10">Events</span>
-                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200"></div>
-              </a>
-              <a href="#menu" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all group">
-                <span className="relative z-10">Menu</span>
-                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200"></div>
-              </a>
-              <a href="#about" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all group">
-                <span className="relative z-10">About</span>
-                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200"></div>
-              </a>
-              <div className="w-px h-6 bg-white/10 mx-3"></div>
-              <a
-                href="tel:0717535345"
-                className="relative group ml-2"
-              >
-                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-all duration-300 animate-pulse"></div>
-                <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-bold px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2 shadow-lg">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  <span className="text-sm">Reserve Table</span>
+            {/* Sophisticated Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-2">
+              {/* Navigation Links */}
+              <div className="flex items-center gap-1 mr-6">
+                <a href="#home" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
+                  <span className="relative z-10 tracking-wide">Home</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
+                </a>
+
+                <a href="#events" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
+                  <span className="relative z-10 tracking-wide">Events</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
+                </a>
+
+                <Link href="/menu" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
+                  <span className="relative z-10 tracking-wide">Menu</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
+                </Link>
+
+                <a href="#about" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
+                  <span className="relative z-10 tracking-wide">About</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
+                </a>
+              </div>
+
+              {/* Elegant Divider */}
+              <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+
+              {/* Premium CTA Button */}
+              <a href="tel:0717535345" className="relative group ml-3">
+                {/* Animated Glow */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 rounded-full opacity-60 group-hover:opacity-100 blur-md transition-all duration-500 animate-pulse"></div>
+
+                {/* Button Container */}
+                <div className="relative bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 rounded-full p-[1.5px] group-hover:p-[2px] transition-all duration-300">
+                  <div className="bg-black/40 backdrop-blur-sm rounded-full px-6 py-3 group-hover:bg-transparent transition-all duration-300">
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 text-white group-hover:rotate-12 transition-transform duration-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      <span className="text-[13px] font-semibold text-white tracking-wide">Reserve Table</span>
+                    </div>
+                  </div>
                 </div>
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Refined Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative group"
+              className="md:hidden relative group p-2"
             >
-              <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative w-10 h-10 flex items-center justify-center">
+              <div className="absolute inset-0 bg-white/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative w-6 h-6 flex items-center justify-center">
                 <div className="space-y-1.5">
-                  <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                  <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-                  <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                  <span className={`block w-5 h-[2px] bg-gradient-to-r from-amber-400 to-white rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}></span>
+                  <span className={`block w-5 h-[2px] bg-white rounded-full transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                  <span className={`block w-5 h-[2px] bg-gradient-to-r from-white to-orange-400 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`}></span>
                 </div>
               </div>
             </button>
           </div>
 
-          {/* Mobile Menu */}
-          <div className={`md:hidden overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="py-6 space-y-3 border-t border-white/5">
+          {/* Elegant Mobile Menu */}
+          <div className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${mobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="py-6 space-y-2 border-t border-white/5">
               <a
                 href="#home"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
               >
-                Home
+                <span className="tracking-wide">Home</span>
               </a>
               <a
                 href="#events"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
               >
-                Events
+                <span className="tracking-wide">Events</span>
               </a>
-              <a
-                href="#menu"
+              <Link
+                href="/menu"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
               >
-                Menu
-              </a>
+                <span className="tracking-wide">Menu</span>
+              </Link>
               <a
                 href="#about"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
               >
-                About
+                <span className="tracking-wide">About</span>
               </a>
               <a
                 href="tel:0717535345"
-                className="block bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold px-4 py-3 rounded-lg text-center shadow-lg mt-4"
+                className="block mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold px-5 py-3.5 rounded-xl text-center shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-all duration-300"
               >
-                Reserve Table
+                <span className="tracking-wide">Reserve Table</span>
               </a>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
+      {/* Stunning Cinematic Hero Section */}
+      <section id="home" className="relative min-h-screen flex items-center overflow-hidden pt-20 lg:pt-24">
+        {/* Cinematic Background with Animated Gradients */}
+        <div className="absolute inset-0 bg-black">
+          {/* Sophisticated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-slate-900 to-black"></div>
 
-          {/* Gradient Orbs */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+          {/* Elegant floating orbs */}
+          <div className="absolute top-20 -left-20 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] animate-float"></div>
+          <div className="absolute bottom-20 -right-20 w-96 h-96 bg-orange-500/10 rounded-full blur-[120px] animate-float" style={{ animationDelay: '2s' }}></div>
+
+          {/* Subtle noise texture for depth */}
+          <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' /%3E%3C/svg%3E")' }}></div>
         </div>
 
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="text-center space-y-8 max-w-5xl mx-auto">
-            <div className="space-y-6 animate-fade-in-up">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-500/20 rounded-full px-6 py-2.5 backdrop-blur-sm animate-slide-down">
-                <div className="relative">
-                  <span className="absolute inset-0 w-2 h-2 bg-amber-500 rounded-full animate-ping"></span>
-                  <span className="relative block w-2 h-2 bg-amber-500 rounded-full"></span>
-                </div>
-                <span className="text-amber-400 font-bold tracking-[0.2em] text-xs uppercase">Premium Nightlife Experience</span>
-              </div>
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="max-w-7xl mx-auto">
+            {/* Main Hero Content */}
+            <div className="text-center space-y-8 lg:space-y-12">
 
-              <div className="relative">
-                <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter leading-none mb-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                  CLUB
-                </h1>
-                <h1 className="text-6xl sm:text-7xl md:text-9xl lg:text-[10rem] font-black bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-clip-text text-transparent tracking-tighter leading-none relative animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                  COCOBONGO
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-clip-text text-transparent blur-2xl opacity-30 -z-10">
-                    COCOBONGO
-                  </div>
-                </h1>
-              </div>
-            </div>
-
-            <div className="space-y-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-8 py-3 backdrop-blur-md shadow-lg shadow-amber-500/10">
-                <div className="relative flex items-center gap-2">
-                  <span className="relative flex h-3 w-3">
+              {/* Elegant top badge */}
+              <div className="animate-fade-in-up">
+                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-full px-6 py-3">
+                  <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
                   </span>
-                  <span className="text-amber-400 font-bold tracking-wide text-sm">UNDER NEW MANAGEMENT</span>
+                  <span className="text-amber-400 font-semibold tracking-[0.3em] text-xs uppercase">Diani's Premier Destination</span>
                 </div>
               </div>
 
-              <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed font-light">
-                Experience the finest nightlife at Diani&apos;s most exclusive club.
-                Join us for unforgettable nights of music, entertainment, and exceptional service.
-              </p>
+              {/* Massive bold typography */}
+              <div className="space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter">
+                  <span className="block text-white mb-4">
+                    CLUB
+                  </span>
+                  <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                    COCOBONGO
+                  </span>
+                </h1>
 
-              <div className="flex items-center justify-center gap-2 text-white/60">
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2">
-                  <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="font-medium text-sm">Opposite Diani Reef Hotel</span>
+                {/* Elegant divider */}
+                <div className="flex items-center justify-center gap-3">
+                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+                  <div className="w-2 h-2 rotate-45 bg-amber-500"></div>
+                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-              <a
-                href="tel:0717535345"
-                className="group relative"
-              >
-                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-70 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-                <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-bold px-10 py-4 rounded-full text-base transition-all duration-300 shadow-2xl flex items-center gap-3 group-hover:scale-105 transform">
-                  <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  <span>0717 535 345</span>
-                </div>
-              </a>
-              <a
-                href="#menu"
-                className="group relative bg-white/5 backdrop-blur-sm border-2 border-white/10 hover:border-amber-500/50 hover:bg-white/10 text-white font-bold px-10 py-4 rounded-full text-base transition-all duration-300 flex items-center gap-3 hover:scale-105 transform"
-              >
-                <span>View Menu</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+
+              {/* Call to action buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                <a href="tel:0717535345" className="group relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-full opacity-70 group-hover:opacity-100 blur transition-all duration-500"></div>
+                  <div className="relative flex items-center gap-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-black px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 group-hover:scale-105">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                    </svg>
+                    <span>Reserve Your Table</span>
+                  </div>
+                </a>
+
+                <Link href="/menu" className="group relative">
+                  <div className="relative flex items-center gap-3 bg-white/5 hover:bg-white/10 border-2 border-white/20 hover:border-amber-500/50 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300">
+                    <span>Explore Menu</span>
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
         </div>
       </section>
 
@@ -282,120 +350,375 @@ export default function Home() {
               <span className="text-amber-400 font-bold tracking-[0.2em] text-xs uppercase">What&apos;s Happening</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight animate-fade-in-up">
-              WEEKLY <span className="gradient-text-animated">EVENTS</span>
+              WEEKLY <span className="gradient-text-animated">PROGRAM</span>
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-400 to-orange-500 mx-auto mb-6 rounded-full"></div>
             <p className="text-white/60 text-lg font-light">
-              Seven nights a week, unforgettable experiences await. Join us for the best entertainment in Diani.
+              Seven nights a week, unforgettable experiences await. Check out this week&apos;s lineup.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto items-start">
-            {/* Program Image */}
-            <div className="relative group order-2 lg:order-1 animate-scale-in">
-              <div className="absolute -inset-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition-all duration-1000 animate-glow"></div>
-              <div className="relative bg-gradient-to-br from-slate-800/20 to-slate-900/20 backdrop-blur-sm rounded-3xl p-3 border border-amber-500/20 shadow-2xl">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <Image
-                    src="/program.jpg"
-                    alt="Club Cocobongo Weekly Program"
-                    width={800}
-                    height={1200}
-                    className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </div>
-              </div>
+          {/* Weekly Program Grid - Display all posters */}
+          <div className="max-w-7xl mx-auto">
+            {/* Main Program and Description - Side by Side */}
+            <div className="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+              {/* Main Program Overview Poster */}
+              <div className="relative group h-full">
+                <div className="absolute -inset-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-all duration-1000"></div>
+                <div className="relative bg-gradient-to-br from-slate-800/20 to-slate-900/20 backdrop-blur-sm rounded-3xl p-3 border border-amber-500/20 shadow-2xl h-full flex flex-col">
 
-              {/* Decorative Elements */}
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl animate-float"></div>
-              <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
-            </div>
+                  {/* Header Section */}
+                  <div className="bg-gradient-to-br from-slate-900/80 to-black/60 border border-amber-500/20 rounded-xl p-6 md:p-8 mb-3 flex-shrink-0">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-white font-black text-2xl md:text-3xl mb-2 leading-tight">
+                            Weekly <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Program</span>
+                          </h4>
+                          <p className="text-amber-400 text-sm md:text-base font-bold">
+                            {weekDates.weekRange}, {weekDates.year}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="flex items-center gap-2 bg-amber-500/20 border border-amber-500/30 rounded-full px-4 py-2">
+                            <div className="relative flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                            </div>
+                            <span className="text-amber-400 font-bold text-xs uppercase tracking-wider">Live Events</span>
+                          </div>
+                          <span className="text-white/60 text-xs font-semibold">7 Days • 7 Events</span>
+                        </div>
+                      </div>
+                      <div className="pt-3 border-t border-amber-500/10">
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          Experience the ultimate nightlife with DJs, karaoke, themed parties, and more. Your week of unforgettable entertainment starts here!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Interactive Program Cards */}
-            <div className="space-y-5 order-1 lg:order-2">
-              {weeklyProgram.map((item, index) => (
-                <div
-                  key={index}
-                  className="group relative animate-slide-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-20 blur transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl p-6 transition-all duration-500 hover:translate-x-2 shadow-xl hover:shadow-2xl hover:shadow-amber-500/10">
-                    {/* Day Badge */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur opacity-50"></div>
-                        <div className="relative inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 rounded-full shadow-lg">
-                          <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  {/* Poster Image */}
+                  <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center">
+                    <Image
+                      src="/programs/program.jpg"
+                      alt="Club Cocobongo Weekly Program"
+                      width={800}
+                      height={1000}
+                      className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                      priority
+                    />
+                  </div>
+
+                  {/* Footer Section */}
+                  <div className="bg-gradient-to-br from-slate-900/80 to-black/60 border border-amber-500/20 rounded-xl p-6 md:p-8 mt-3 flex-shrink-0">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <a
+                          href="https://maps.app.goo.gl/7TE1d92TDiW1uuKJ6"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg p-2">
+                            <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-white text-sm font-black group-hover:text-amber-400 transition-colors">Diani Beach</p>
+                            <p className="text-white/70 text-xs group-hover:text-amber-400/70 transition-colors">Opposite Diani Reef Hotel</p>
+                            <p className="text-amber-400 text-[10px] font-semibold mt-0.5">📍 Get Directions</p>
+                          </div>
+                        </a>
+                        <a
+                          href="tel:0717535345"
+                          className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-bold text-sm px-6 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                           </svg>
-                          <span className="text-black font-black text-sm tracking-wider">
-                            {item.day}
+                          Reserve Now
+                        </a>
+                      </div>
+                      <div className="pt-3 border-t border-amber-500/10">
+                        <p className="text-white/60 text-xs mb-3 font-semibold">CLUB FEATURES</p>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full font-semibold">
+                            VIP Tables
+                          </span>
+                          <span className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full font-semibold">
+                            Premium Drinks
+                          </span>
+                          <span className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full font-semibold">
+                            Live DJs
+                          </span>
+                          <span className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full font-semibold">
+                            Open 7 Days
+                          </span>
+                          <span className="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full font-semibold">
+                            Gourmet Menu
                           </span>
                         </div>
                       </div>
-                      <div className="text-4xl opacity-20 group-hover:opacity-40 transition-all duration-300 group-hover:scale-110 transform">
-                        🎵
-                      </div>
                     </div>
+                  </div>
 
-                    {/* Event Details */}
-                    <div className="space-y-3">
-                      <h3 className="text-2xl md:text-3xl font-black text-white leading-tight group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-amber-400 group-hover:to-orange-500 group-hover:bg-clip-text transition-all duration-300">
-                        {item.event}
-                      </h3>
-                      {item.host && (
-                        <div className="flex items-center gap-2 text-amber-400/90">
-                          <div className="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
-                          <p className="font-semibold text-sm tracking-wide">
-                            {item.host}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                </div>
+              </div>
 
-                    {/* Hover Effect Line */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left rounded-b-2xl shadow-lg shadow-amber-500/50"></div>
+              {/* Weekly Program Description - Daily Cards */}
+              <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col h-full">
+                <div className="mb-6 flex-shrink-0">
+                  <h3 className="text-2xl md:text-3xl font-black text-white mb-3 leading-tight">
+                    This Week at <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Cocobongo</span>
+                  </h3>
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-full px-4 py-2">
+                    <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-amber-400 font-bold text-sm">{weekDates.weekRange}, {weekDates.year}</span>
                   </div>
                 </div>
-              ))}
+
+                {/* Daily Program Cards */}
+                <div className="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  {dailyPrograms.map((program, index) => {
+                    const dayDate = weekDates.days[index];
+                    return (
+                      <div
+                        key={program.day}
+                        className="bg-gradient-to-br from-slate-900/60 to-black/40 border border-amber-500/10 rounded-xl p-3 hover:border-amber-500/30 transition-all duration-300 group"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center font-black text-black text-xs">
+                            {program.day.substring(0, 3).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-white font-black text-base leading-tight group-hover:text-amber-400 transition-colors mb-1">
+                              {program.title}
+                            </h4>
+                            <p className="text-amber-400 text-xs font-semibold mb-2">
+                              {dayDate.formatted.full} • {program.host}
+                            </p>
+                            <p className="text-white/60 text-xs leading-relaxed mb-2">
+                              {program.description}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {program.highlights.slice(0, 3).map((highlight, i) => (
+                                <span
+                                  key={i}
+                                  className="text-[10px] bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full"
+                                >
+                                  {highlight}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Quick Info */}
+                <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-white/10 flex-shrink-0">
+                  <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2">
+                    <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-amber-400 text-xs font-semibold">Open 7 Days</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2">
+                    <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                    </svg>
+                    <span className="text-amber-400 text-xs font-semibold">0717 535 345</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Daily Program Grid */}
+            <div className="mb-12">
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">
+                <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">DAILY PROGRAMS</span>
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Program 1 - Monday */}
+                <div className="group relative animate-scale-in">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
+                    <div className="relative">
+                      <Image
+                        src="/programs/IMG-20251104-WA0033.jpg"
+                        alt="Monday - Sensational Karaoke"
+                        width={400}
+                        height={600}
+                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
+                        MONDAY
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="flex items-center gap-2 text-amber-400 text-sm">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-semibold">November 4, 2025</span>
+                      </div>
+                      <h4 className="text-white font-black text-lg leading-tight">Sensational Karaoke</h4>
+                      <p className="text-white/60 text-sm">
+                        Sing your heart out with Kowa the Great! Join us for an unforgettable karaoke night.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Program 2 - Tuesday */}
+                <div className="group relative animate-scale-in" style={{ animationDelay: '0.1s' }}>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
+                    <div className="relative">
+                      <Image
+                        src="/programs/IMG-20251104-WA0034.jpg"
+                        alt="Tuesday - Wine & Dine"
+                        width={400}
+                        height={600}
+                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
+                        TUESDAY
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="flex items-center gap-2 text-amber-400 text-sm">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-semibold">November 5, 2025</span>
+                      </div>
+                      <h4 className="text-white font-black text-lg leading-tight">Wine & Dine</h4>
+                      <p className="text-white/60 text-sm">
+                        An elegant evening of fine wines and exquisite cuisine. Perfect for a sophisticated night out.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Program 3 - Wednesday */}
+                <div className="group relative animate-scale-in" style={{ animationDelay: '0.2s' }}>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
+                    <div className="relative">
+                      <Image
+                        src="/programs/IMG-20251104-WA0035.jpg"
+                        alt="Wednesday - Wet & Wild"
+                        width={400}
+                        height={600}
+                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
+                        WEDNESDAY
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="flex items-center gap-2 text-amber-400 text-sm">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-semibold">November 6, 2025</span>
+                      </div>
+                      <h4 className="text-white font-black text-lg leading-tight">Wet & Wild</h4>
+                      <p className="text-white/60 text-sm">
+                        DJ Ricky brings the heat! Get ready for an electrifying mid-week party like no other.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Program 4 - Thursday */}
+                <div className="group relative animate-scale-in" style={{ animationDelay: '0.3s' }}>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
+                    <div className="relative">
+                      <Image
+                        src="/programs/IMG-20251104-WA0036.jpg"
+                        alt="Thursday - Afro Piano"
+                        width={400}
+                        height={600}
+                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
+                        THURSDAY
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="flex items-center gap-2 text-amber-400 text-sm">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-semibold">November 7, 2025</span>
+                      </div>
+                      <h4 className="text-white font-black text-lg leading-tight">Afro Piano</h4>
+                      <p className="text-white/60 text-sm">
+                        DJ Ricky returns with smooth Afro Piano vibes. Dance to the rhythm of African beats all night long.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Reservations CTA */}
-          <div className="text-center mt-20 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-            <div className="inline-block relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl blur-xl opacity-30 animate-glow"></div>
-              <div className="relative bg-gradient-to-br from-slate-800/60 to-slate-900/80 backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-8 md:p-12 shadow-2xl">
-                <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-                  <div className="text-left flex-1">
-                    <div className="inline-flex items-center gap-2 text-white/50 text-xs mb-3 uppercase tracking-widest font-semibold">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                      Location
-                    </div>
-                    <div className="flex items-center gap-3 text-white mb-4">
-                      <span className="font-bold text-lg">Opposite Diani Reef Hotel</span>
-                    </div>
-                    <p className="gradient-text-animated text-xl md:text-2xl font-black">
-                      RESERVATIONS & VIP BOOKINGS
-                    </p>
+          {/* Location & Reservations CTA */}
+          <div className="text-center mt-20 animate-fade-in-up">
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-8">
+                <h3 className="text-3xl md:text-4xl font-black text-white mb-3">
+                  FIND <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">US</span>
+                </h3>
+                <p className="text-white/70 text-lg">Visit us at Diani Beach, opposite Diani Reef Hotel</p>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute -inset-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-all duration-1000"></div>
+                <div className="relative bg-gradient-to-br from-slate-800/60 to-slate-900/80 backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-4 md:p-6 shadow-2xl">
+                  <div className="relative overflow-hidden rounded-2xl">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3978.7127982800316!2d39.589487574976786!3d-4.275937495698002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1840463f98d4562f%3A0xf8f8d4d762f25bc6!2sCoco%20Bongo%20Diani!5e0!3m2!1sen!2ske!4v1762288087660!5m2!1sen!2ske"
+                      width="100%"
+                      height="450"
+                      style={{ border: 0 }}
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="rounded-xl"
+                    />
                   </div>
-                  <a
-                    href="tel:0717535345"
-                    className="group relative flex-shrink-0"
-                  >
-                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-70 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-                    <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-black text-lg md:text-xl px-10 py-5 rounded-full transition-all duration-300 transform group-hover:scale-105 shadow-2xl flex items-center gap-3">
-                      <svg className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                      </svg>
-                      0717 535 345
+
+                  <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-br from-slate-900/80 to-black/60 border border-amber-500/20 rounded-xl p-4 md:p-6">
+                    <div className="text-center sm:text-left">
+                      <p className="text-white/60 text-xs mb-1 uppercase tracking-widest font-semibold">Reservations & VIP Bookings</p>
+                      <p className="gradient-text-animated text-xl md:text-2xl font-black">
+                        CALL US NOW
+                      </p>
                     </div>
-                  </a>
+                    <a
+                      href="tel:0717535345"
+                      className="group relative"
+                    >
+                      <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg opacity-70 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+                      <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-black text-lg md:text-xl px-10 py-5 rounded-full transition-all duration-300 transform group-hover:scale-105 shadow-2xl flex items-center gap-3">
+                        <svg className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        0717 535 345
+                      </div>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -403,97 +726,181 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Menu Section */}
-      <section id="menu" className="relative py-20 md:py-32 bg-black">
-        <div className="container mx-auto px-4">
-          {/* Section Header */}
-          <div className="text-center mb-16 max-w-3xl mx-auto">
-            <p className="text-amber-400 font-semibold tracking-[0.3em] text-sm uppercase mb-4">
-              Culinary Excellence
-            </p>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
-              FOOD & <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">BEVERAGES</span>
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-orange-500 mx-auto mb-6"></div>
-            <p className="text-white/60 text-lg">
-              Indulge in our curated selection of premium drinks and gourmet cuisine, crafted to perfection.
-            </p>
-          </div>
+      {/* Sophisticated Menu Preview Section */}
+      <section id="menu" className="relative py-24 md:py-40 overflow-hidden">
+        {/* Elegant Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-slate-950 to-black"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-[150px] animate-pulse"></div>
+        <div className="absolute inset-0 opacity-[0.02]" style={{backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '50px 50px'}}></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Cocktails Card */}
-            <div className="group relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm border border-amber-500/20 hover:border-amber-500/50 rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-2 h-full">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <div className="text-5xl">🍹</div>
-                </div>
-                <h3 className="text-2xl font-black text-white mb-3 group-hover:text-amber-400 transition-colors">
-                  Signature Cocktails
-                </h3>
-                <p className="text-white/60 leading-relaxed mb-4">
-                  Expertly mixed cocktails and premium spirits from around the world
-                </p>
-                <div className="flex items-center justify-center gap-1 text-amber-400">
-                  <span className="text-sm font-semibold">Explore Menu</span>
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-6xl mx-auto">
+            {/* Premium Header */}
+            <div className="mb-16">
+              {/* Refined Badge */}
+              <div className="inline-flex items-center gap-4 mb-8">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
+                <span className="text-amber-400/80 font-light tracking-[0.35em] text-[10px] uppercase">Culinary Artistry</span>
+                <div className="h-px w-12 bg-gradient-to-l from-transparent via-amber-500/40 to-transparent"></div>
               </div>
-            </div>
 
-            {/* Wine Card */}
-            <div className="group relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm border border-amber-500/20 hover:border-amber-500/50 rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-2 h-full">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <div className="text-5xl">🍷</div>
-                </div>
-                <h3 className="text-2xl font-black text-white mb-3 group-hover:text-amber-400 transition-colors">
-                  Premium Wines
-                </h3>
-                <p className="text-white/60 leading-relaxed mb-4">
-                  A carefully curated wine collection featuring the finest vintages
-                </p>
-                <div className="flex items-center justify-center gap-1 text-amber-400">
-                  <span className="text-sm font-semibold">Explore Menu</span>
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+              {/* Elegant Title */}
+              <h2 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+                Gastronomy &
+                <span className="block mt-2 bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 bg-clip-text text-transparent">
+                  Fine Libations
+                </span>
+              </h2>
+
+              {/* Decorative Separator */}
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-500/30 to-amber-500/50"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500/60"></div>
+                <div className="w-1 h-1 rounded-full bg-amber-500/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500/60"></div>
+                <div className="h-px w-16 bg-gradient-to-l from-transparent via-amber-500/30 to-amber-500/50"></div>
               </div>
-            </div>
 
-            {/* Food Card */}
-            <div className="group relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm border border-amber-500/20 hover:border-amber-500/50 rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-2 h-full">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <div className="text-5xl">🍽️</div>
-                </div>
-                <h3 className="text-2xl font-black text-white mb-3 group-hover:text-amber-400 transition-colors">
-                  Gourmet Cuisine
-                </h3>
-                <p className="text-white/60 leading-relaxed mb-4">
-                  Delicious dishes prepared by our talented culinary team
-                </p>
-                <div className="flex items-center justify-center gap-1 text-amber-400">
-                  <span className="text-sm font-semibold">Explore Menu</span>
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-16 text-center">
-            <div className="inline-block bg-gradient-to-r from-slate-800/40 to-slate-900/40 backdrop-blur-sm border border-amber-500/20 rounded-2xl px-8 py-4">
-              <p className="text-white/70">
-                <span className="text-amber-400 font-bold">Tuesday Special:</span> Join us for our Wine & Dine experience
+              {/* Refined Description */}
+              <p className="text-white/50 text-lg md:text-xl font-light leading-relaxed max-w-3xl mx-auto">
+                Immerse yourself in an exquisite culinary journey where<br className="hidden md:block" />
+                world-class cuisine meets masterfully crafted libations
               </p>
+            </div>
+
+            {/* Luxurious Menu Categories */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+              {/* Signature Cocktails Card */}
+              <div className="group relative">
+                {/* Animated Glow Effect */}
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-700"></div>
+
+                {/* Card Container */}
+                <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-black/90 backdrop-blur-xl border border-white/10 group-hover:border-amber-500/30 rounded-3xl p-10 transition-all duration-700 group-hover:transform group-hover:-translate-y-3">
+                  {/* Inner Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                  {/* Icon Container */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                      <span className="text-5xl filter group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.5)] transition-all duration-700">🍹</span>
+                    </div>
+                    {/* Decorative Corner Accent */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-amber-500/20 rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-4 tracking-tight group-hover:text-amber-400 transition-colors duration-500">
+                    Signature Cocktails
+                  </h3>
+                  <div className="h-px w-16 bg-gradient-to-r from-amber-500/50 to-transparent mx-auto mb-5 group-hover:w-24 transition-all duration-500"></div>
+                  <p className="text-white/50 text-[15px] leading-relaxed font-light">
+                    Meticulously crafted libations and the world's finest spirits, curated by our master mixologists
+                  </p>
+                </div>
+              </div>
+
+              {/* Gourmet Cuisine Card */}
+              <div className="group relative">
+                {/* Animated Glow Effect */}
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-700"></div>
+
+                {/* Card Container */}
+                <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-black/90 backdrop-blur-xl border border-white/10 group-hover:border-amber-500/30 rounded-3xl p-10 transition-all duration-700 group-hover:transform group-hover:-translate-y-3">
+                  {/* Inner Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                  {/* Icon Container */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                      <span className="text-5xl filter group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.5)] transition-all duration-700">🍽️</span>
+                    </div>
+                    {/* Decorative Corner Accent */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-amber-500/20 rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-4 tracking-tight group-hover:text-amber-400 transition-colors duration-500">
+                    Gourmet Cuisine
+                  </h3>
+                  <div className="h-px w-16 bg-gradient-to-r from-amber-500/50 to-transparent mx-auto mb-5 group-hover:w-24 transition-all duration-500"></div>
+                  <p className="text-white/50 text-[15px] leading-relaxed font-light">
+                    Exceptional culinary creations from our award-winning chefs, blending tradition with innovation
+                  </p>
+                </div>
+              </div>
+
+              {/* Premium Selection Card */}
+              <div className="group relative">
+                {/* Animated Glow Effect */}
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-700"></div>
+
+                {/* Card Container */}
+                <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-black/90 backdrop-blur-xl border border-white/10 group-hover:border-amber-500/30 rounded-3xl p-10 transition-all duration-700 group-hover:transform group-hover:-translate-y-3">
+                  {/* Inner Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                  {/* Icon Container */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                      <span className="text-5xl filter group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.5)] transition-all duration-700">🍷</span>
+                    </div>
+                    {/* Decorative Corner Accent */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-amber-500/20 rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-4 tracking-tight group-hover:text-amber-400 transition-colors duration-500">
+                    Premium Selection
+                  </h3>
+                  <div className="h-px w-16 bg-gradient-to-r from-amber-500/50 to-transparent mx-auto mb-5 group-hover:w-24 transition-all duration-500"></div>
+                  <p className="text-white/50 text-[15px] leading-relaxed font-light">
+                    An distinguished collection of rare vintages, aged spirits, and exclusive beverages
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Elegant CTA Section */}
+            <div className="space-y-8">
+              {/* Menu Button */}
+              <div>
+                <Link href="/menu" className="group relative inline-block">
+                  {/* Glowing Aura */}
+                  <div className="absolute -inset-2 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-amber-500/30 rounded-full blur-2xl opacity-50 group-hover:opacity-75 transition-all duration-700 animate-pulse"></div>
+
+                  {/* Button */}
+                  <div className="relative bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 rounded-full p-[2px] group-hover:p-[2.5px] transition-all duration-500">
+                    <div className="bg-black rounded-full px-12 py-5 group-hover:bg-transparent transition-all duration-500">
+                      <div className="flex items-center gap-4 text-white group-hover:text-black transition-colors duration-500">
+                        <span className="font-serif text-lg md:text-xl font-semibold tracking-wide">Explore Our Menu</span>
+                        <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Special Announcement */}
+              <div className="relative inline-block group">
+                {/* Background Effects */}
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/40 via-slate-800/40 to-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/10 group-hover:border-amber-500/20 transition-all duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                {/* Content */}
+                <div className="relative px-10 py-6">
+                  <div className="flex items-center gap-3 text-[15px]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+                      <span className="font-serif text-amber-400/90 font-semibold tracking-wider">Tuesday Special</span>
+                    </div>
+                    <div className="h-3 w-px bg-white/20"></div>
+                    <span className="text-white/60 font-light">Join us for an exclusive Wine & Dine experience</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -553,28 +960,15 @@ export default function Home() {
             {/* Brand Column */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                {/* Teardrop logo container */}
-                <div className="relative w-10 h-20">
-                  {/* White teardrop shape with flat top and smooth rounded bottom */}
-                  <div
-                    className="absolute inset-0 bg-white shadow-xl"
-                    style={{
-                      borderRadius: '0 0 50% 50%',
-                      clipPath: 'path("M 0 0 L 40 0 L 40 48 Q 40 60 35 66 Q 30 72 20 72 Q 10 72 5 66 Q 0 60 0 48 Z")',
-                    }}
-                  >
-                    {/* Logo positioned in the circular part with more padding */}
-                    <div className="absolute inset-0 flex items-end justify-center pb-4 px-2">
-                      <Image
-                        src="/logo.png"
-                        alt="Club Cocobongo Logo"
-                        width={56}
-                        height={56}
-                        className="object-contain"
-                      />
-                    </div>
-                  </div>
-
+                {/* Simple logo without background */}
+                <div className="relative">
+                  <Image
+                    src="/logo02.png"
+                    alt="Club Cocobongo Logo"
+                    width={60}
+                    height={60}
+                    className="object-contain"
+                  />
                 </div>
                 <div className="text-2xl font-black">
                   <span className="text-white">CLUB</span>

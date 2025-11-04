@@ -1,0 +1,854 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+export default function MenuPage() {
+  const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
+  const [isChanging, setIsChanging] = useState(false);
+
+  const handleTabChange = (tab: 'food' | 'drinks') => {
+    if (tab !== activeTab) {
+      setIsChanging(true);
+      setTimeout(() => {
+        setActiveTab(tab);
+        setIsChanging(false);
+      }, 300);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-black to-orange-500/10"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/10 shadow-2xl transition-all duration-300">
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-orange-500/5"></div>
+        <div className="container mx-auto px-6 relative">
+          <div className="flex items-center justify-between h-24">
+            {/* Logo */}
+            <Link href="/" className="group flex items-center space-x-3 relative">
+              <div className="relative flex items-center space-x-3">
+                <div className="relative transform group-hover:scale-110 transition-all duration-500 group-hover:rotate-12">
+                  <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <Image
+                    src="/logo02.png"
+                    alt="Club Cocobongo Logo"
+                    width={60}
+                    height={60}
+                    className="object-contain relative z-10"
+                  />
+                </div>
+                <div className="text-xl tracking-tight">
+                  <div className="font-black text-white leading-none group-hover:text-amber-400 transition-colors duration-300">CLUB</div>
+                  <div className="font-black bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 bg-clip-text text-transparent leading-none">COCOBONGO</div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              <Link href="/#home" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all duration-300 group">
+                <span className="relative z-10">Home</span>
+                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+              </Link>
+              <Link href="/#events" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all duration-300 group">
+                <span className="relative z-10">Events</span>
+                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+              </Link>
+              <Link href="/menu" className="relative px-4 py-2 text-sm font-semibold text-amber-400 transition-all duration-300 group">
+                <span className="relative z-10">Menu</span>
+                <div className="absolute inset-0 bg-amber-500/10 rounded-lg"></div>
+              </Link>
+              <Link href="/#about" className="relative px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-all duration-300 group">
+                <span className="relative z-10">About</span>
+                <div className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+              </Link>
+              <div className="w-px h-6 bg-white/10 mx-3"></div>
+              <a href="tel:0717535345" className="relative group ml-2">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-bold px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2 shadow-lg transform group-hover:scale-105">
+                  <svg className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                  <span className="text-sm">Reserve Table</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Redesigned Premium Hero Section */}
+      <section className="relative pt-40 pb-32 overflow-hidden">
+        {/* Sophisticated Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-slate-950 to-black"></div>
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[120px] animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute inset-0 opacity-[0.015]" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '40px 40px'}}></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative">
+          <div className="text-center max-w-5xl mx-auto">
+            {/* Premium Badge */}
+            <div className="inline-flex items-center gap-3 mb-8 animate-fade-in">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-amber-500/50"></div>
+              <span className="text-amber-400/90 font-light tracking-[0.25em] text-[11px] uppercase">Curated Selections</span>
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-amber-500/50"></div>
+            </div>
+
+            {/* Elegant Title */}
+            <h1 className="relative mb-8 animate-slide-up">
+              <span className="block text-white/40 font-light text-sm md:text-base tracking-[0.3em] uppercase mb-4">Club Cocobongo</span>
+              <span className="block font-serif text-6xl md:text-8xl font-bold text-white tracking-tight leading-none mb-2">
+                Our Menu
+              </span>
+              <span className="block text-lg md:text-xl text-white/50 font-light tracking-wide mt-6 max-w-2xl mx-auto leading-relaxed">
+                A symphony of flavors from around the world,<br className="hidden md:block" />
+                thoughtfully curated for discerning palates
+              </span>
+            </h1>
+
+            {/* Decorative Divider */}
+            <div className="flex items-center justify-center gap-4 mb-12 animate-expand">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500/70"></div>
+              <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500/70"></div>
+              <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+            </div>
+          </div>
+
+          {/* Premium Tab Navigation */}
+          <div className="flex justify-center mb-16 animate-slide-up-delay">
+            <div className="inline-flex gap-3 relative">
+              {/* Background Slider */}
+              <div
+                className={`absolute top-0 bottom-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-xl border border-amber-500/30 rounded-full transition-all duration-500 shadow-lg shadow-amber-500/20 ${
+                  activeTab === 'food' ? 'left-0 w-[180px]' : 'left-[calc(180px+12px)] w-[200px]'
+                }`}
+              ></div>
+
+              <button
+                onClick={() => handleTabChange('food')}
+                className={`relative px-10 py-5 font-light text-base tracking-wide transition-all duration-500 z-10 ${
+                  activeTab === 'food'
+                    ? 'text-white'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <span className={`text-xl transition-transform duration-500 ${activeTab === 'food' ? 'scale-110' : 'scale-100'}`}>🍽</span>
+                  <span>Food</span>
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleTabChange('drinks')}
+                className={`relative px-10 py-5 font-light text-base tracking-wide transition-all duration-500 z-10 ${
+                  activeTab === 'drinks'
+                    ? 'text-white'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <span className={`text-xl transition-transform duration-500 ${activeTab === 'drinks' ? 'scale-110' : 'scale-100'}`}>🍸</span>
+                  <span>Beverages</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Menu Content with Fade Transition */}
+          <div className={`transition-all duration-300 ${isChanging ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+            {activeTab === 'food' && (
+              <div className="max-w-7xl mx-auto">
+                <FoodMenu />
+              </div>
+            )}
+
+            {activeTab === 'drinks' && (
+              <div className="max-w-7xl mx-auto">
+                <DrinksMenu />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Sophisticated Footer CTA */}
+      <section className="relative py-32 overflow-hidden">
+        {/* Elegant Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-slate-950 to-black"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[150px]"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-2xl mx-auto text-center">
+            {/* Decorative Top Line */}
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/30"></div>
+              <div className="w-1 h-1 rounded-full bg-amber-500/50"></div>
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/30"></div>
+            </div>
+
+            <h3 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+              Reserve Your Table
+            </h3>
+            <p className="text-white/50 text-lg font-light mb-10 leading-relaxed">
+              Experience exceptional cuisine in an elegant atmosphere.<br className="hidden md:block" />
+              Call us to make a reservation.
+            </p>
+
+            <a
+              href="tel:0717535345"
+              className="group inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 hover:border-amber-500/30 px-10 py-5 rounded-full transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-amber-500/10"
+            >
+              <svg className="w-5 h-5 text-amber-400 group-hover:rotate-12 transition-transform duration-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              <span className="text-white font-light tracking-wide">0717 535 345</span>
+            </a>
+
+            {/* Decorative Bottom Line */}
+            <div className="flex items-center justify-center gap-3 mt-12">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/30"></div>
+              <div className="w-1 h-1 rounded-full bg-amber-500/50"></div>
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/30"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// Food Menu Component - Premium Redesign
+function FoodMenu() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      {/* BREAKFAST */}
+      <div className="group relative animate-fade-in-up">
+        {/* Elegant Card Container */}
+        <div className="relative bg-gradient-to-b from-slate-900/80 to-black/80 backdrop-blur-2xl border border-white/5 rounded-3xl overflow-hidden transition-all duration-700 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/5">
+          {/* Subtle Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+          {/* Content */}
+          <div className="relative p-8">
+            {/* Category Header */}
+            <div className="mb-8">
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-4xl transform group-hover:scale-110 transition-transform duration-500">🍳</span>
+                <div>
+                  <h3 className="font-serif text-3xl font-bold text-white tracking-tight">Breakfast</h3>
+                  <div className="h-px w-16 bg-gradient-to-r from-amber-500/50 to-transparent mt-2"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <div className="space-y-5 max-h-[500px] overflow-y-auto custom-scrollbar pr-3">
+              {[
+                { name: 'English Breakfast', desc: 'Bacon, Eggs, Grilled Tomatoes, Sausages, Baked beans, Mushroom, Toast bread, Tea, Coffee, Juice', price: '1,500' },
+                { name: 'Continental Breakfast', desc: 'Waffles, Pancakes, Fruit platter, Juice, Coffee, Tea', price: '1,500' },
+                { name: 'Assorted Breakfast', desc: 'Tea, Coffee, Pancakes, Waffles, Milk', price: '1,500' },
+                { name: 'Sausages', price: '300' },
+                { name: 'Choma Sausages', price: '250' },
+                { name: 'Eggs cooked your style', price: '700' },
+                { name: 'Hot Chocolate', price: '800' },
+                { name: 'Hot Dawa', price: '200' },
+                { name: 'Masala Tea', price: '300' },
+                { name: 'White Coffee', price: '400' },
+                { name: 'Espresso', price: '200' },
+                { name: 'Cappuccino', price: '350' },
+                { name: 'Coffelate', price: '400' },
+                { name: 'Americano', price: '300' },
+                { name: 'Mocha', price: '400' },
+                { name: 'Herbs Tea', price: '350' },
+                { name: 'Iced Cappuccino', price: '450' },
+                { name: 'Iced Coffee', price: '450' }
+              ].map((item, i) => (
+                <div key={i} className="group/item relative py-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-all duration-300 rounded-lg px-2">
+                  <div className="flex justify-between items-start gap-6">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-white/90 text-sm tracking-wide mb-1 group-hover/item:text-amber-400/90 transition-colors duration-300">
+                        {item.name}
+                      </h4>
+                      {item.desc && (
+                        <p className="text-white/40 text-xs leading-relaxed font-light">
+                          {item.desc}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-baseline gap-1 flex-shrink-0">
+                      <span className="text-[10px] text-amber-500/60 font-light">KSH</span>
+                      <span className="font-serif text-amber-400/90 font-medium text-base tracking-tight">{item.price}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="flex-1 relative z-10">
+                <h4 className="text-white font-semibold text-sm group-hover:text-amber-400 transition-colors duration-300">{item.name}</h4>
+                {item.desc && <p className="text-white/50 text-xs mt-1 group-hover:text-white/70 transition-colors duration-300">{item.desc}</p>}
+              </div>
+              <span className="text-amber-400 font-bold whitespace-nowrap text-sm relative z-10 group-hover:scale-110 transition-transform duration-300">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* STARTERS */}
+      <div className="menu-card bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6 hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/10 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl transform hover:scale-110 transition-transform duration-300">🥟</div>
+          <h3 className="text-2xl font-black text-white bg-gradient-to-r from-white to-amber-100 bg-clip-text">Starters & Soups</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          <h4 className="text-amber-400 font-bold text-sm mb-2 animate-fade-in">STARTERS</h4>
+          {[
+            { name: 'Chicken Wings', price: 'Kshs. 800' },
+            { name: 'Vegetable Samosa', price: 'Kshs. 350' },
+            { name: 'Meat Samosa', price: 'Kshs. 500' },
+            { name: 'Tempura Prawns', price: 'Kshs. 700' },
+            { name: 'Calamari Rings', price: 'Kshs. 1,500' },
+            { name: 'Nachos Vegetable', price: 'Kshs. 1,100' }
+          ].map((item, i) => (
+            <div key={i} className="menu-item flex justify-between items-center p-2 rounded-lg group cursor-pointer relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="text-white font-semibold text-sm relative z-10 group-hover:text-amber-400 transition-colors duration-300">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm relative z-10 group-hover:scale-110 transition-transform duration-300">{item.price}</span>
+            </div>
+          ))}
+          <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4 animate-fade-in">SOUPS</h4>
+          {[
+            { name: 'Ossobuco Soup', price: 'Kshs. 700' },
+            { name: 'Chicken Soup', price: 'Kshs. 650' },
+            { name: 'Tomato Soup', price: 'Kshs. 500' },
+            { name: "Soup of the Day (Chef's Special)", price: 'Kshs. 800' }
+          ].map((item, i) => (
+            <div key={i} className="menu-item flex justify-between items-center p-2 rounded-lg group cursor-pointer relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="text-white font-semibold text-sm relative z-10 group-hover:text-amber-400 transition-colors duration-300">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm relative z-10 group-hover:scale-110 transition-transform duration-300">{item.price}</span>
+            </div>
+          ))}
+          <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4 animate-fade-in">KIDS CORNER</h4>
+          {[
+            { name: 'Chicken Nuggets', price: 'Kshs. 650' },
+            { name: 'Fish Fingers', price: 'Kshs. 800' },
+            { name: 'Chicken Wings', price: 'Kshs. 800' }
+          ].map((item, i) => (
+            <div key={i} className="menu-item flex justify-between items-center p-2 rounded-lg group cursor-pointer relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="text-white font-semibold text-sm relative z-10 group-hover:text-amber-400 transition-colors duration-300">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm relative z-10 group-hover:scale-110 transition-transform duration-300">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* MAIN COURSE */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6 lg:col-span-2">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🍖</div>
+          <h3 className="text-2xl font-black text-white">Main Course</h3>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+            <h4 className="text-amber-400 font-bold text-sm mb-2">CHICKEN & MEAT</h4>
+            {[
+              { name: '1/2 Chicken', desc: 'Cooked your style, served with 2 sides (fries and salad)', price: 'Kshs. 1,500' },
+              { name: 'Full Chicken', desc: 'Cooked your style, served with 2 sides (mashed potatoes and salad)', price: 'Kshs. 3,000' },
+              { name: 'Full Chicken Kienyeji', desc: 'Cooked your style', price: 'Kshs. 3,500' },
+              { name: '1/2 Chicken Kienyeji', desc: 'Cooked your style', price: 'Kshs. 1,800' },
+              { name: 'Chicken Meuniere', price: 'Kshs. 1,300' },
+              { name: 'Chicken Schnitzel', price: 'Kshs. 1,400' },
+              { name: 'Beef Steak Grilled/Stew', price: 'Kshs. 1,500' },
+              { name: 'Beef Stroganoff', desc: 'Served with mashed potatoes and vegetables', price: 'Kshs. 1,850' },
+              { name: 'Beef Stew', price: 'Kshs. 800' },
+              { name: 'Grilled Beef 1/2 kg', desc: 'Served with 2 sides', price: 'Kshs. 1,200' },
+              { name: 'Grilled Beef 1kg', desc: 'Served with 2 sides', price: 'Kshs. 2,400' },
+              { name: 'Grilled Goat 1/2kg', price: 'Kshs. 1,500' },
+              { name: 'Grilled Goat 1kg', price: 'Kshs. 3,000' },
+              { name: 'Goat Arm 1.5kg', price: 'Kshs. 3,500' },
+              { name: 'Goat Leg 2kg', price: 'Kshs. 4,500' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-start gap-4 hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold text-sm">{item.name}</h4>
+                  {item.desc && <p className="text-white/50 text-xs mt-0.5">{item.desc}</p>}
+                </div>
+                <span className="text-amber-400 font-bold whitespace-nowrap text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+            <h4 className="text-amber-400 font-bold text-sm mb-2">SEAFOOD</h4>
+            {[
+              { name: 'Whole Fish', desc: 'Cooked your style', price: 'Kshs. 1,500' },
+              { name: 'Catch of the Day', desc: '200g', price: 'Kshs. 1,600' },
+              { name: 'Lobster', price: 'Kshs. 2,400' },
+              { name: 'Octopus', desc: 'Cooked your style', price: 'Kshs. 1,300' },
+              { name: 'King Prawns', price: 'Kshs. 2,300' },
+              { name: 'Jumbo Prawns', price: 'Kshs. 2,500' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-start gap-4 hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold text-sm">{item.name}</h4>
+                  {item.desc && <p className="text-white/50 text-xs mt-0.5">{item.desc}</p>}
+                </div>
+                <span className="text-amber-400 font-bold whitespace-nowrap text-sm">{item.price}</span>
+              </div>
+            ))}
+            <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">PLATTERS</h4>
+            {[
+              { name: 'Vegetables Platter', desc: 'Veg samosa, veg tacos, veg rolls, feta samosa, fried onions', price: 'Kshs. 1,800' },
+              { name: 'Seafood Platter', desc: 'Fish, lobster, king prawns, calamari, octopus', price: 'Kshs. 4,500' },
+              { name: 'Meat Platter', desc: 'Mbuzi, beef, chicken, fish choma, sausage, vegs, ugali', price: 'Kshs. 3,800' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-start gap-4 hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold text-sm">{item.name}</h4>
+                  {item.desc && <p className="text-white/50 text-xs mt-0.5">{item.desc}</p>}
+                </div>
+                <span className="text-amber-400 font-bold whitespace-nowrap text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* SALADS & DESSERTS */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🥗</div>
+          <h3 className="text-2xl font-black text-white">Salads & Desserts</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          <h4 className="text-amber-400 font-bold text-sm mb-2">SALADS</h4>
+          {[
+            { name: 'Garden Salad', price: 'Kshs. 800' },
+            { name: 'Greek Salad', price: 'Kshs. 1,200' },
+            { name: 'Caesar Salad', price: 'Kshs. 1,000' },
+            { name: 'Seafood Salad', price: 'Kshs. 1,400' },
+            { name: 'Tuna Salad', price: 'Kshs. 1,300' },
+            { name: 'Kachumbari', price: 'Kshs. 400' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+              <span className="text-white font-semibold text-sm">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+            </div>
+          ))}
+          <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">DESSERTS</h4>
+          {[
+            { name: 'Ice Cream', price: 'Kshs. 250' },
+            { name: 'Milk Shake', price: 'Kshs. 750' },
+            { name: 'Smoothie', price: 'Kshs. 900' },
+            { name: 'Tropical Fruits + Ice Cream', price: 'Kshs. 650' },
+            { name: 'Banana Split', price: 'Kshs. 700' },
+            { name: 'Fruit Salad', price: 'Kshs. 500' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+              <span className="text-white font-semibold text-sm">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PIZZAS & PASTAS */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🍕</div>
+          <h3 className="text-2xl font-black text-white">Pizzas & Pastas</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          <h4 className="text-amber-400 font-bold text-sm mb-2">PIZZAS</h4>
+          {[
+            { name: 'Margherita', price: 'Kshs. 900' },
+            { name: 'Marinara', price: 'Kshs. 1,100' },
+            { name: 'Chicken Calzone (Open/Closed)', price: 'Kshs. 1,500' },
+            { name: 'Prosciutto', price: 'Kshs. 1,350' },
+            { name: 'Vegetariana', price: 'Kshs. 1,200' },
+            { name: 'Hawaiian', price: 'Kshs. 1,300' },
+            { name: 'Seafood Pizza', price: 'Kshs. 1,500' },
+            { name: 'Verdura', price: 'Kshs. 1,500' },
+            { name: 'Diavola', price: 'Kshs. 1,250' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+              <span className="text-white font-semibold text-sm">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+            </div>
+          ))}
+          <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">PASTAS</h4>
+          {[
+            { name: 'Carbonara', price: 'Kshs. 1,300' },
+            { name: 'Bolognese', price: 'Kshs. 1,200' },
+            { name: 'Pomodoro Veg', price: 'Kshs. 800' },
+            { name: 'Spaghetti Frutti di Mare (Seafood)', price: 'Kshs. 1,600' },
+            { name: 'Pasta Sauce', price: 'Kshs. 950' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+              <span className="text-white font-semibold text-sm">{item.name}</span>
+              <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BURGERS & SWAHILI FOOD */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6 lg:col-span-2">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+              <div className="text-3xl">🍔</div>
+              <h3 className="text-2xl font-black text-white">Burgers</h3>
+            </div>
+            <div className="space-y-2.5">
+              {[
+                { name: 'Beef Burger', price: 'Kshs. 1,200' },
+                { name: 'Mini Beef Burger', price: 'Kshs. 650' },
+                { name: 'Chicken Burger', price: 'Kshs. 1,100' },
+                { name: 'Mini Chicken Burger', price: 'Kshs. 600' },
+                { name: 'Fish Burger (Tuna)', price: 'Kshs. 1,500' },
+                { name: 'Steak Baguette', price: 'Kshs. 1,700' },
+                { name: 'Polish Zapiekanka', price: 'Kshs. 800' }
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+                </div>
+              ))}
+              <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">ACCOMPANIMENTS</h4>
+              {[
+                { name: 'Ugali', price: 'Kshs. 150' },
+                { name: 'Vegetable Rice', price: 'Kshs. 350' },
+                { name: 'Plain Rice', price: 'Kshs. 300' },
+                { name: 'Coconut Rice', price: 'Kshs. 350' },
+                { name: 'Mash Potatoes', price: 'Kshs. 450' },
+                { name: 'Chips', price: 'Kshs. 300' },
+                { name: 'Mixed Vegetables', price: 'Kshs. 300' },
+                { name: 'Spinach (Creamed/Sauté)', price: 'Kshs. 450' },
+                { name: 'Chapati', price: 'Kshs. 300' }
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+              <div className="text-3xl">🍛</div>
+              <h3 className="text-2xl font-black text-white">Swahili Food</h3>
+            </div>
+            <div className="space-y-2.5">
+              <h4 className="text-amber-400 font-bold text-sm mb-2">BIRYANI</h4>
+              {[
+                { name: 'Beef Biryani', price: 'Kshs. 750' },
+                { name: 'Chicken Biryani', price: 'Kshs. 850' },
+                { name: 'Mbuzi Biryani', price: 'Kshs. 950' }
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+                </div>
+              ))}
+              <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">PILAU</h4>
+              {[
+                { name: 'Beef Pilau', price: 'Kshs. 600' },
+                { name: 'Chicken Pilau', price: 'Kshs. 700' },
+                { name: 'Mbuzi Pilau', price: 'Kshs. 800' }
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+                </div>
+              ))}
+              <h4 className="text-amber-400 font-bold text-sm mb-2 mt-4">CURRY</h4>
+              {[
+                { name: 'Eggs Curry', price: 'Kshs. 550' },
+                { name: 'Prawns Curry', desc: 'Served with Coconut Rice', price: 'Kshs. 1,600' },
+                { name: 'Octopus Curry', price: 'Kshs. 1,100' }
+              ].map((item, i) => (
+                <div key={i} className="flex justify-between items-start gap-4 hover:bg-white/5 p-2 rounded-lg transition-all">
+                  <div className="flex-1">
+                    <h4 className="text-white font-semibold text-sm">{item.name}</h4>
+                    {item.desc && <p className="text-white/50 text-xs mt-0.5">{item.desc}</p>}
+                  </div>
+                  <span className="text-amber-400 font-bold whitespace-nowrap text-sm">{item.price}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Drinks Menu Component  
+function DrinksMenu() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* COCKTAILS */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🍹</div>
+          <h3 className="text-2xl font-black text-white">Signature Cocktails</h3>
+        </div>
+        <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          {[
+            { name: 'Mojito', desc: 'White rum, lime, mint, sugar, soda water', price: '750/-' },
+            { name: 'Strawberry Mojito', desc: 'White rum, lime, mint, sugar, strawberry', price: '800/-' },
+            { name: 'Spiced Mojito', desc: 'Dark rum, lime, mint, sugar, soda water', price: '750/-' },
+            { name: 'Pina Colada', desc: 'White rum, pineapple juice, malibu, coconut cream', price: '850/-' },
+            { name: 'Blue Pinacolada', desc: 'White rum, blue curacao, malibu, pineapple juice', price: '850/-' },
+            { name: 'Dawa', desc: 'Vodka, lime, honey', price: '700/-' },
+            { name: 'Caipirinha', desc: 'Cachaca or white rum, sugar, soda water', price: '750/-' },
+            { name: 'Caipiroska', desc: 'Vodka, lime juice, sugar', price: '700/-' },
+            { name: 'Cuba Libre', desc: 'Dark rum, havanna, lime, cola', price: '800/-' },
+            { name: 'Sex on the Beach', desc: 'Vodka, peach schnapps, orange juice, cranberry', price: '900/-' },
+            { name: 'Tequila Sunrise', desc: 'Tequila, orange juice, grenadine syrup', price: '800/-' },
+            { name: 'Margarita', desc: 'Tequila, orange juice, lime juice', price: '800/-' },
+            { name: 'Cosmopolitan', desc: 'Vodka, cointreau, cranberry juice, lime juice', price: '850/-' },
+            { name: 'Mai Tai', desc: 'Dark rum, white rum, orange curacao, almond syrup', price: '1,000/-' },
+            { name: 'Long Island Ice Tea', desc: 'Vodka, tequila, gin, white rum, cointreau, cola', price: '1,200/-' },
+            { name: 'Adios Motherfucker', desc: 'White rum, vodka, triple sec, gin, lime, sprite, blue curacao', price: '1,400/-' },
+            { name: 'Expresso Martini', desc: 'Vodka, kahlua, expresso, simple syrup', price: '850/-' },
+            { name: 'Moscow Mule', desc: 'Vodka, lime juice, ginger beer', price: '800/-' },
+            { name: 'Whisky Sour', desc: 'Bourbon whisky, egg white, lime, simple syrup', price: '850/-' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-start gap-4 group hover:bg-white/5 p-3 rounded-lg transition-all">
+              <div className="flex-1">
+                <h4 className="text-white font-bold group-hover:text-amber-400 transition-colors">{item.name}</h4>
+                <p className="text-white/50 text-xs mt-1">{item.desc}</p>
+              </div>
+              <span className="text-amber-400 font-bold whitespace-nowrap">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* VODKA */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🥃</div>
+          <h3 className="text-2xl font-black text-white">Vodka</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          {[
+            { name: 'Ciroc', size: '750ml', price: '8,500/-' },
+            { name: 'Absolut', size: '750ml', price: '7,500/-' },
+            { name: 'Belvedere', size: '750ml', price: '8,000/-' },
+            { name: 'Smirnoff Black Label', size: '750ml', price: '6,000/-' },
+            { name: 'Smirnoff Red Label', size: '750ml', price: '4,000/-' },
+            { name: 'Smirnoff Red Label', size: '375ml', price: '2,200/-' },
+            { name: 'Smirnoff Red Label', size: '250ml', price: '1,500/-' },
+            { name: 'Gillbeys', size: '750ml', price: '4,000/-' },
+            { name: 'Gillbeys', size: '375ml', price: '2,200/-' },
+            { name: 'Gillbeys', size: '250ml', price: '1,500/-' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-all">
+              <div>
+                <span className="text-white font-semibold">{item.name}</span>
+                <span className="text-white/50 text-sm ml-2">{item.size}</span>
+              </div>
+              <span className="text-amber-400 font-bold">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* GIN */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🍸</div>
+          <h3 className="text-2xl font-black text-white">Gin</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          {[
+            { name: 'Tanqueray Dry', size: '750ml', price: '7,500/-' },
+            { name: 'Tanqueray Royal', size: '750ml', price: '7,500/-' },
+            { name: 'Tanqueray No.10', size: '750ml', price: '8,500/-' },
+            { name: 'Tanqueray Sevilla', size: '750ml', price: '7,500/-' },
+            { name: 'Tanqueray Rangpur', size: '750ml', price: '7,500/-' },
+            { name: 'Bombay Saphire', size: '750ml', price: '8,500/-' },
+            { name: 'Beefeater', size: '750ml', price: '7,500/-' },
+            { name: 'Hendricks', size: '750ml', price: '12,500/-' },
+            { name: 'Gordons', size: '750ml', price: '5,000/-' },
+            { name: 'Monkey 47', size: '700ml', price: '10,000/-' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-all">
+              <div>
+                <span className="text-white font-semibold">{item.name}</span>
+                <span className="text-white/50 text-sm ml-2">{item.size}</span>
+              </div>
+              <span className="text-amber-400 font-bold">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* WHISKY */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🥃</div>
+          <h3 className="text-2xl font-black text-white">Scotch Whisky</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          {[
+            { name: 'Johnny Walker Blue Label', size: '750ml', price: '50,000/-' },
+            { name: 'Johnny Walker Gold Label', size: '750ml', price: '20,000/-' },
+            { name: 'Johnny Walker 18y', size: '750ml', price: '20,000/-' },
+            { name: 'Johnny Walker Reserve', size: '750ml', price: '18,000/-' },
+            { name: 'Johnny Walker Green Label', size: '750ml', price: '15,000/-' },
+            { name: 'Johnny Walker Double Black', size: '750ml', price: '11,250/-' },
+            { name: 'Johnny Walker Black Label', size: '750ml', price: '5,000/-' },
+            { name: 'Johnny Walker Red Label', size: '750ml', price: '5,000/-' },
+            { name: 'Chivas Regal 18y', size: '750ml', price: '19,000/-' },
+            { name: 'Chivas Regal 15y', size: '750ml', price: '12,000/-' },
+            { name: 'Chivas Regal 12y', size: '750ml', price: '9,000/-' },
+            { name: 'Glenfiddich 18y', size: '750ml', price: '25,000/-' },
+            { name: 'Glenfiddich 15y', size: '750ml', price: '18,000/-' },
+            { name: 'Glenfiddich 12y', size: '750ml', price: '15,000/-' },
+            { name: 'Glenlivet 18y', size: '750ml', price: '25,000/-' },
+            { name: 'Glenlivet 15y', size: '750ml', price: '18,500/-' },
+            { name: 'Glenlivet 12y', size: '750ml', price: '15,000/-' },
+            { name: 'Singleton 18y', size: '750ml', price: '18,000/-' },
+            { name: 'Singleton 15y', size: '750ml', price: '15,000/-' },
+            { name: 'Singleton 12y', size: '750ml', price: '12,000/-' }
+          ].map((item, i) => (
+            <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-all">
+              <div>
+                <span className="text-white font-semibold">{item.name}</span>
+                <span className="text-white/50 text-sm ml-2">{item.size}</span>
+              </div>
+              <span className="text-amber-400 font-bold">{item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BEER */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🍺</div>
+          <h3 className="text-2xl font-black text-white">Beer & Ciders</h3>
+        </div>
+        <div className="space-y-2.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+          <div className="mb-4">
+            <h4 className="text-amber-400 font-bold text-sm mb-2">BOTTLES</h4>
+            {[
+              { name: 'Tusker Larger', size: '0.5l', price: '400/-' },
+              { name: 'Balozi Larger', size: '0.5l', price: '400/-' },
+              { name: 'White Cap Lager', size: '0.5l', price: '400/-' },
+              { name: 'Pilsner Larger', size: '0.5l', price: '400/-' },
+              { name: 'Tusker Ndimu', size: '0.5l', price: '400/-' },
+              { name: 'Tusker Lite', size: '0.3l', price: '400/-' },
+              { name: 'Tusker Malt', size: '0.3l', price: '400/-' },
+              { name: 'Guiness Stout', size: '0.5l', price: '450/-' },
+              { name: 'Guiness Smooth', size: '0.5l', price: '450/-' },
+              { name: 'Heineken', size: '0.33l', price: '450/-' },
+              { name: 'Corona', size: '0.33l', price: '500/-' },
+              { name: 'Desperado', size: '0.33l', price: '450/-' },
+              { name: 'Smirnoff Ice', size: '', price: '400/-' },
+              { name: 'Snapp', size: '', price: '400/-' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div>
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  {item.size && <span className="text-white/50 text-xs ml-2">{item.size}</span>}
+                </div>
+                <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+          <div>
+            <h4 className="text-amber-400 font-bold text-sm mb-2">CIDERS</h4>
+            {[
+              { name: 'Tusker Cider', price: '400/-' },
+              { name: 'Savannah', price: '450/-' },
+              { name: 'Hunters Dry', price: '450/-' },
+              { name: 'Hunters Gold', price: '450/-' },
+              { name: 'Kenya Original', price: '450/-' },
+              { name: 'Manyatta', price: '450/-' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2 rounded-lg transition-all">
+                <span className="text-white font-semibold text-sm">{item.name}</span>
+                <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* MOCKTAILS & SOFT DRINKS */}
+      <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-6 lg:col-span-2">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/20">
+          <div className="text-3xl">🥤</div>
+          <h3 className="text-2xl font-black text-white">Mocktails & Soft Drinks</h3>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <h4 className="text-amber-400 font-bold text-sm">MOCKTAILS</h4>
+            {[
+              { name: 'Coconut Kiss', desc: 'Pineapple juice, orange juice, coconut cream, grenadine', price: '500/-' },
+              { name: 'Dawa Sawa', desc: 'Lime, honey, sprite', price: '400/-' },
+              { name: 'Apple Ginger Fizz', desc: 'Fresh mint, lime, sugar, soda water', price: '450/-' },
+              { name: 'Virgin Mojito', desc: 'Lime, mint, sugar, soda water', price: '400/-' },
+              { name: 'Blush Berry Cooler', desc: 'Mixed berry juice, lemon juice, mint, sprite', price: '450/-' },
+              { name: 'Lemonade', desc: 'Lemon juice, simple syrup, sparkling water', price: '450/-' },
+              { name: 'Tropical Breeze', desc: 'Pineapple juice, orange juice, coconut syrup, lime juice', price: '450/-' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-start gap-4 hover:bg-white/5 p-2.5 rounded-lg transition-all">
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold text-sm">{item.name}</h4>
+                  <p className="text-white/50 text-xs mt-0.5">{item.desc}</p>
+                </div>
+                <span className="text-amber-400 font-bold whitespace-nowrap text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-3">
+            <h4 className="text-amber-400 font-bold text-sm">SOFT DRINKS</h4>
+            {[
+              { name: 'Soda', desc: 'Cola, Fanta, Sprite, Crest', price: '200/-' },
+              { name: 'Water', price: '200/-' },
+              { name: 'Fresh Juice', desc: 'Passion, Orange, Mango, Pineapple', price: '350/-' },
+              { name: 'Del Monte Juice', size: '1L', price: '450/-' },
+              { name: 'Still Water', size: '0.5L', price: '150/-' },
+              { name: 'Still Water', size: '1L', price: '300/-' },
+              { name: 'Sparkling Water', size: '1L', price: '400/-' },
+              { name: 'Red Bull', price: '450/-' },
+              { name: 'Lime Cordial', price: '50/-' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-center hover:bg-white/5 p-2.5 rounded-lg transition-all">
+                <div>
+                  <span className="text-white font-semibold text-sm">{item.name}</span>
+                  {item.desc && <span className="text-white/50 text-xs ml-2">{item.desc}</span>}
+                  {item.size && <span className="text-white/50 text-xs ml-2">{item.size}</span>}
+                </div>
+                <span className="text-amber-400 font-bold text-sm">{item.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
