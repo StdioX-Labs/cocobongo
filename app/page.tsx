@@ -953,6 +953,191 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Google Reviews Section */}
+      <section className="relative py-20 md:py-32 bg-black overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-black to-slate-900"></div>
+          <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-[120px]"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-[120px]"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative">
+          {/* Section Header */}
+          <div className="text-center mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-full px-6 py-3 mb-6">
+              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="text-amber-400 font-bold tracking-[0.2em] text-xs uppercase">Customer Reviews</span>
+            </div>
+
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+              WHAT OUR GUESTS <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">SAY</span>
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-orange-500 mx-auto mb-6"></div>
+            <p className="text-white/60 text-lg max-w-2xl mx-auto">
+              Join hundreds of satisfied customers who have experienced the best nightlife in Diani
+            </p>
+          </div>
+
+          {/* Google Rating Summary */}
+          <div className="max-w-md mx-auto mb-12">
+            <div className="bg-gradient-to-b from-slate-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <span className="text-6xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">4.8</span>
+                <div className="text-left">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg key={star} className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-white/60 text-sm mt-1">Based on 150+ reviews</p>
+                </div>
+              </div>
+
+              {/* Leave Review Button */}
+              <a
+                href="https://www.google.com/search?q=club+cocobongo&oq=club+&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIOCAEQRRgnGDsYgAQYigUyBggCEEUYOTIGCAMQRRg7MgoIBBAuGLEDGIAEMhAIBRAAGIMBGLEDGIAEGIoFMgYIBhBFGDwyBggHEEUYPdIBCDIwNTZqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8#lrd=0x1840463f98d4562f:0xf8f8d4d762f25bc6,3,,,,"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-block w-full mt-6"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-full opacity-70 group-hover:opacity-100 blur transition-all duration-500"></div>
+                <div className="relative flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-black px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 group-hover:scale-105">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span>Leave a Review on Google</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          {/* Reviews Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* Review 1 */}
+            <div className="group relative">
+              <div className="relative bg-gradient-to-b from-slate-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-500 h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-orange-500/0 group-hover:from-amber-500/5 group-hover:to-orange-500/5 rounded-2xl transition-all duration-500"></div>
+
+                <div className="relative">
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg key={star} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="text-white/80 text-sm leading-relaxed mb-4">
+                    &quot;Amazing atmosphere! The DJs are incredible and the drinks are top-notch. Best club in Diani hands down!&quot;
+                  </p>
+
+                  {/* Reviewer */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center text-amber-400 font-bold">
+                      JM
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">John M.</p>
+                      <p className="text-white/40 text-xs">2 weeks ago</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 2 */}
+            <div className="group relative">
+              <div className="relative bg-gradient-to-b from-slate-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-500 h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-orange-500/0 group-hover:from-amber-500/5 group-hover:to-orange-500/5 rounded-2xl transition-all duration-500"></div>
+
+                <div className="relative">
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg key={star} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="text-white/80 text-sm leading-relaxed mb-4">
+                    &quot;Fantastic venue with great music and excellent service. The staff are friendly and professional. Highly recommend!&quot;
+                  </p>
+
+                  {/* Reviewer */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center text-amber-400 font-bold">
+                      SK
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">Sarah K.</p>
+                      <p className="text-white/40 text-xs">1 month ago</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 3 */}
+            <div className="group relative">
+              <div className="relative bg-gradient-to-b from-slate-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-500 h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-orange-500/0 group-hover:from-amber-500/5 group-hover:to-orange-500/5 rounded-2xl transition-all duration-500"></div>
+
+                <div className="relative">
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg key={star} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="text-white/80 text-sm leading-relaxed mb-4">
+                    &quot;Had an amazing night here! Great ambiance, delicious cocktails, and the live DJ was phenomenal. Will definitely be back!&quot;
+                  </p>
+
+                  {/* Reviewer */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center text-amber-400 font-bold">
+                      DW
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">David W.</p>
+                      <p className="text-white/40 text-xs">3 weeks ago</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* View All Reviews on Google */}
+          <div className="text-center">
+            <a
+              href="https://www.google.com/search?q=club+cocobongo&oq=club+&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIOCAEQRRgnGDsYgAQYigUyBggCEEUYOTIGCAMQRRg7MgoIBBAuGLEDGIAEMhAIBRAAGIMBGLEDGIAEGIoFMgYIBhBFGDwyBggHEEUYPdIBCDIwNTZqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8#lrd=0x1840463f98d4562f:0xf8f8d4d762f25bc6,3,,,,"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 font-semibold transition-all duration-300 group"
+            >
+              <span>View All Reviews on Google</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="relative bg-black border-t border-amber-500/10">
         <div className="container mx-auto px-4 py-12">
