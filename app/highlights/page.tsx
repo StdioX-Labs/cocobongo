@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -31,7 +31,13 @@ const highlights: HighlightItem[] = [
     artist: 'Kaligraph Jones',
     title: 'Exclusive Show'
   },
-  // IMG_2932.DNG - Not supported (RAW format - convert to JPG to use)
+  {
+    id: '12',
+    type: 'image',
+    src: '/highlights/kaligraph jones/IMG_2932.jpg',
+    artist: 'Masauti',
+    title: 'Behind The Scenes'
+  },
 
   // Okello Max
   {
@@ -108,7 +114,17 @@ export default function HighlightsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [shareSuccess, setShareSuccess] = useState(false);
-  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
+
+  // Initialize loading states using useMemo to avoid cascading renders
+  const initialLoadingStates = useMemo(() => {
+    const states: { [key: string]: boolean } = {};
+    highlights.forEach(item => {
+      states[item.id] = true; // Start with everything loading
+    });
+    return states;
+  }, []);
+
+  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>(initialLoadingStates);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -116,15 +132,6 @@ export default function HighlightsPage() {
   const setMediaLoading = (id: string, isLoading: boolean) => {
     setLoadingStates(prev => ({ ...prev, [id]: isLoading }));
   };
-
-  // Initialize loading states
-  useEffect(() => {
-    const initialStates: { [key: string]: boolean } = {};
-    highlights.forEach(item => {
-      initialStates[item.id] = true; // Start with everything loading
-    });
-    setLoadingStates(initialStates);
-  }, []);
 
   // Handle share functionality
   const handleShare = async () => {
@@ -162,9 +169,21 @@ export default function HighlightsPage() {
     const currentVideo = videoRefs.current[currentIndex];
     if (currentVideo && highlights[currentIndex].type === 'video') {
       currentVideo.currentTime = 0;
-      currentVideo.play().catch(() => {
-        // Autoplay might be blocked
-      });
+
+      // Only play if video is ready
+      const playVideo = () => {
+        currentVideo.play().catch(() => {
+          // Autoplay might be blocked
+        });
+      };
+
+      if (currentVideo.readyState >= 3) {
+        // Video is ready to play
+        playVideo();
+      } else {
+        // Wait for video to be ready
+        currentVideo.addEventListener('canplay', playVideo, { once: true });
+      }
     }
 
     // Pause other videos
@@ -320,16 +339,46 @@ export default function HighlightsPage() {
           >
             {/* Media Container */}
             <div className="relative w-full h-full flex items-center justify-center bg-black">
-              {/* Loading Spinner Overlay */}
+              {/* Loading State - Show thumbnail and info */}
               {loadingStates[item.id] && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black z-20">
-                  <div className="relative">
-                    {/* Spinning Circle */}
-                    <div className="w-16 h-16 border-4 border-white/20 border-t-amber-400 rounded-full animate-spin"></div>
-                    {/* Inner Glow */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 bg-amber-400/20 rounded-full blur-xl animate-pulse"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-black via-slate-900 to-black z-20">
+                  {/* Artist Info Preview */}
+                  <div className="text-center space-y-4 px-6">
+                    {/* Icon */}
+                    <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border-2 border-amber-500/30">
+                      {item.type === 'video' ? (
+                        <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                        </svg>
+                      )}
                     </div>
+
+                    {/* Artist Name */}
+                    <div>
+                      <h3 className="text-white font-bold text-2xl sm:text-3xl mb-2">
+                        {item.artist}
+                      </h3>
+                      <p className="text-amber-400/90 text-base sm:text-lg">
+                        {item.title}
+                      </p>
+                    </div>
+
+                    {/* Loading Spinner */}
+                    <div className="relative inline-block">
+                      <div className="w-12 h-12 border-3 border-white/20 border-t-amber-400 rounded-full animate-spin"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-amber-400/20 rounded-full blur-lg animate-pulse"></div>
+                      </div>
+                    </div>
+
+                    {/* Loading Text */}
+                    <p className="text-white/50 text-sm">
+                      {item.type === 'video' ? 'Loading video...' : 'Loading image...'}
+                    </p>
                   </div>
                 </div>
               )}
@@ -356,10 +405,13 @@ export default function HighlightsPage() {
                   loop
                   playsInline
                   muted={isMuted}
+                  preload="metadata"
                   onLoadStart={() => setMediaLoading(item.id, true)}
-                  onLoadedData={() => setMediaLoading(item.id, false)}
-                  onWaiting={() => setMediaLoading(item.id, true)}
-                  onPlaying={() => setMediaLoading(item.id, false)}
+                  onCanPlay={() => setMediaLoading(item.id, false)}
+                  onLoadedMetadata={() => {
+                    // Video metadata is loaded, we can show it now
+                    setMediaLoading(item.id, false);
+                  }}
                 />
               )}
 
