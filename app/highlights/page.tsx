@@ -339,48 +339,75 @@ export default function HighlightsPage() {
           >
             {/* Media Container */}
             <div className="relative w-full h-full flex items-center justify-center bg-black">
-              {/* Loading State - Show thumbnail and info */}
+              {/* Loading State - Different for images and videos */}
               {loadingStates[item.id] && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-black via-slate-900 to-black z-20">
-                  {/* Artist Info Preview */}
-                  <div className="text-center space-y-4 px-6">
-                    {/* Icon */}
-                    <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border-2 border-amber-500/30">
-                      {item.type === 'video' ? (
-                        <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
+                <>
+                  {item.type === 'image' ? (
+                    // Image Loader - Shimmer/Skeleton effect
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-800 to-black z-20">
+                      {/* Animated shimmer background */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer-bg" style={{ backgroundSize: '200% 100%' }}></div>
 
-                    {/* Artist Name */}
-                    <div>
-                      <h3 className="text-white font-bold text-2xl sm:text-3xl mb-2">
-                        {item.artist}
-                      </h3>
-                      <p className="text-amber-400/90 text-base sm:text-lg">
-                        {item.title}
-                      </p>
-                    </div>
+                      {/* Skeleton content */}
+                      <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+                        {/* Bottom info skeleton */}
+                        <div className="space-y-3 max-w-md">
+                          {/* Title skeleton */}
+                          <div className="h-8 bg-gradient-to-r from-white/10 via-white/20 to-white/10 rounded-lg w-3/4 animate-pulse"></div>
+                          {/* Subtitle skeleton */}
+                          <div className="h-6 bg-gradient-to-r from-white/10 via-white/15 to-white/10 rounded-lg w-1/2 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                          {/* Location skeleton */}
+                          <div className="h-4 bg-gradient-to-r from-amber-500/20 via-amber-500/30 to-amber-500/20 rounded-lg w-1/3 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      </div>
 
-                    {/* Loading Spinner */}
-                    <div className="relative inline-block">
-                      <div className="w-12 h-12 border-3 border-white/20 border-t-amber-400 rounded-full animate-spin"></div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-8 h-8 bg-amber-400/20 rounded-full blur-lg animate-pulse"></div>
+                      {/* Center icon */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 flex items-center justify-center border border-amber-500/20 animate-pulse">
+                          <svg className="w-10 h-10 text-amber-400/60" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
+                  ) : (
+                    // Video Loader - Animated with description
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-black via-slate-900 to-black z-20">
+                      {/* Artist Info Preview */}
+                      <div className="text-center space-y-4 px-6">
+                        {/* Video Icon */}
+                        <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center border-2 border-amber-500/30">
+                          <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                          </svg>
+                        </div>
 
-                    {/* Loading Text */}
-                    <p className="text-white/50 text-sm">
-                      {item.type === 'video' ? 'Loading video...' : 'Loading image...'}
-                    </p>
-                  </div>
-                </div>
+                        {/* Artist Name */}
+                        <div>
+                          <h3 className="text-white font-bold text-2xl sm:text-3xl mb-2">
+                            {item.artist}
+                          </h3>
+                          <p className="text-amber-400/90 text-base sm:text-lg">
+                            {item.title}
+                          </p>
+                        </div>
+
+                        {/* Loading Spinner */}
+                        <div className="relative inline-block">
+                          <div className="w-12 h-12 border-3 border-white/20 border-t-amber-400 rounded-full animate-spin"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-8 h-8 bg-amber-400/20 rounded-full blur-lg animate-pulse"></div>
+                          </div>
+                        </div>
+
+                        {/* Loading Text */}
+                        <p className="text-white/50 text-sm">
+                          Loading video...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {item.type === 'image' ? (
