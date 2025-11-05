@@ -173,6 +173,12 @@ export default function Home() {
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
                 </Link>
 
+                <Link href="/highlights" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
+                  <span className="relative z-10 tracking-wide">Highlights</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-400 group-hover:w-3/4 transition-all duration-300"></div>
+                </Link>
+
                 <a href="#about" className="relative px-5 py-2.5 text-[13px] font-medium text-white/70 hover:text-white transition-all duration-300 group">
                   <span className="relative z-10 tracking-wide">About</span>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-white/[0.03] rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
@@ -241,6 +247,13 @@ export default function Home() {
                 className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
               >
                 <span className="tracking-wide">Menu</span>
+              </Link>
+              <Link
+                href="/highlights"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-5 py-3 text-sm font-medium text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent rounded-xl transition-all duration-300"
+              >
+                <span className="tracking-wide">Highlights</span>
               </Link>
               <a
                 href="#about"
@@ -1246,7 +1259,15 @@ export default function Home() {
 
             <div className="text-center md:text-right">
               <p className="text-white/60 text-sm mb-1">
-                Powered by <span className="text-amber-400 font-semibold">StdioX Labs</span>
+                Powered by{" "}
+                <a
+                  href="https://soldoutafrica.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-400 font-semibold hover:text-amber-300 transition-colors duration-300"
+                >
+                  StdioX Labs
+                </a>
               </p>
               <p className="text-white/40 text-xs">
                 © 2025 Club Cocobongo. All rights reserved.
