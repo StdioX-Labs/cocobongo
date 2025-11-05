@@ -108,8 +108,23 @@ export default function HighlightsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track loading state for each media item
+  const setMediaLoading = (id: string, isLoading: boolean) => {
+    setLoadingStates(prev => ({ ...prev, [id]: isLoading }));
+  };
+
+  // Initialize loading states
+  useEffect(() => {
+    const initialStates: { [key: string]: boolean } = {};
+    highlights.forEach(item => {
+      initialStates[item.id] = true; // Start with everything loading
+    });
+    setLoadingStates(initialStates);
+  }, []);
 
   // Handle share functionality
   const handleShare = async () => {
@@ -130,14 +145,14 @@ export default function HighlightsPage() {
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 3000);
       }
-    } catch (err) {
+    } catch {
       // If sharing fails or is cancelled, try clipboard as fallback
       try {
         await navigator.clipboard.writeText(shareUrl);
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 3000);
-      } catch (clipboardErr) {
-        console.error('Sharing failed:', clipboardErr);
+      } catch {
+        console.error('Sharing failed');
       }
     }
   };
@@ -305,6 +320,20 @@ export default function HighlightsPage() {
           >
             {/* Media Container */}
             <div className="relative w-full h-full flex items-center justify-center bg-black">
+              {/* Loading Spinner Overlay */}
+              {loadingStates[item.id] && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-20">
+                  <div className="relative">
+                    {/* Spinning Circle */}
+                    <div className="w-16 h-16 border-4 border-white/20 border-t-amber-400 rounded-full animate-spin"></div>
+                    {/* Inner Glow */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 bg-amber-400/20 rounded-full blur-xl animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {item.type === 'image' ? (
                 <div className="relative w-full h-full">
                   <Image
@@ -313,6 +342,8 @@ export default function HighlightsPage() {
                     fill
                     className="object-contain"
                     priority={index === currentIndex}
+                    onLoadingComplete={() => setMediaLoading(item.id, false)}
+                    onLoadStart={() => setMediaLoading(item.id, true)}
                   />
                 </div>
               ) : (
@@ -325,6 +356,10 @@ export default function HighlightsPage() {
                   loop
                   playsInline
                   muted={isMuted}
+                  onLoadStart={() => setMediaLoading(item.id, true)}
+                  onLoadedData={() => setMediaLoading(item.id, false)}
+                  onWaiting={() => setMediaLoading(item.id, true)}
+                  onPlaying={() => setMediaLoading(item.id, false)}
                 />
               )}
 
