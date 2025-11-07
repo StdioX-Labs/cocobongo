@@ -3,9 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
+import { useProgramData } from "./hooks/useProgramData";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { programData } = useProgramData();
 
   // Get current week date range and daily programs
   const weekDates = useMemo(() => {
@@ -55,8 +57,8 @@ export default function Home() {
     };
   }, []);
 
-  // Daily program details
-  const dailyPrograms = [
+  // Use daily programs from API or fallback to default
+  const dailyPrograms = programData?.dailyPrograms || [
     {
       day: 'Monday',
       title: 'Sensational Karaoke',
@@ -559,129 +561,59 @@ export default function Home() {
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Program 1 - Monday */}
-                <div className="group relative animate-scale-in">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
-                    <div className="relative">
-                      <Image
-                        src="/programs/IMG-20251104-WA0033.jpg"
-                        alt="Monday - Sensational Karaoke"
-                        width={400}
-                        height={600}
-                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
-                        MONDAY
-                      </div>
-                    </div>
-                    <div className="p-4 space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 text-sm">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">November 4, 2025</span>
-                      </div>
-                      <h4 className="text-white font-black text-lg leading-tight">Sensational Karaoke</h4>
-                      <p className="text-white/60 text-sm">
-                        Sing your heart out with Kowa the Great! Join us for an unforgettable karaoke night.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                {dailyPrograms.slice(0, 4).map((program, index) => {
+                  const dayDate = weekDates.days[index];
+                  // Default fallback images
+                  const defaultImages = [
+                    "/programs/IMG-20251104-WA0033.jpg",
+                    "/programs/IMG-20251104-WA0034.jpg",
+                    "/programs/IMG-20251104-WA0035.jpg",
+                    "/programs/IMG-20251104-WA0036.jpg"
+                  ];
+                  const posterSrc = program.posterUrl || defaultImages[index];
 
-                {/* Program 2 - Tuesday */}
-                <div className="group relative animate-scale-in" style={{ animationDelay: '0.1s' }}>
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
-                    <div className="relative">
-                      <Image
-                        src="/programs/IMG-20251104-WA0034.jpg"
-                        alt="Tuesday - Wine & Dine"
-                        width={400}
-                        height={600}
-                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
-                        TUESDAY
+                  return (
+                    <div
+                      key={program.day}
+                      className="group relative animate-scale-in"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
+                      <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
+                        <div className="relative">
+                          {posterSrc.startsWith('http') || posterSrc.startsWith('/uploads') || posterSrc.startsWith('/api') ? (
+                            <img
+                              src={posterSrc}
+                              alt={`${program.day} - ${program.title}`}
+                              className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <Image
+                              src={posterSrc}
+                              alt={`${program.day} - ${program.title}`}
+                              width={400}
+                              height={600}
+                              className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                            />
+                          )}
+                          <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
+                            {program.day.toUpperCase()}
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-2">
+                          <div className="flex items-center gap-2 text-amber-400 text-sm">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            <span className="font-semibold">{dayDate.formatted.full.split(',')[0]}, {dayDate.formatted.short}</span>
+                          </div>
+                          <h4 className="text-white font-black text-lg leading-tight">{program.title}</h4>
+                          <p className="text-white/60 text-sm">{program.description}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="p-4 space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 text-sm">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">November 5, 2025</span>
-                      </div>
-                      <h4 className="text-white font-black text-lg leading-tight">Wine & Dine</h4>
-                      <p className="text-white/60 text-sm">
-                        An elegant evening of fine wines and exquisite cuisine. Perfect for a sophisticated night out.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Program 3 - Wednesday */}
-                <div className="group relative animate-scale-in" style={{ animationDelay: '0.2s' }}>
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
-                    <div className="relative">
-                      <Image
-                        src="/programs/IMG-20251104-WA0035.jpg"
-                        alt="Wednesday - Wet & Wild"
-                        width={400}
-                        height={600}
-                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
-                        WEDNESDAY
-                      </div>
-                    </div>
-                    <div className="p-4 space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 text-sm">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">November 6, 2025</span>
-                      </div>
-                      <h4 className="text-white font-black text-lg leading-tight">Wet & Wild</h4>
-                      <p className="text-white/60 text-sm">
-                        DJ Ricky brings the heat! Get ready for an electrifying mid-week party like no other.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Program 4 - Thursday */}
-                <div className="group relative animate-scale-in" style={{ animationDelay: '0.3s' }}>
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
-                    <div className="relative">
-                      <Image
-                        src="/programs/IMG-20251104-WA0036.jpg"
-                        alt="Thursday - Afro Piano"
-                        width={400}
-                        height={600}
-                        className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
-                        THURSDAY
-                      </div>
-                    </div>
-                    <div className="p-4 space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 text-sm">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">November 7, 2025</span>
-                      </div>
-                      <h4 className="text-white font-black text-lg leading-tight">Afro Piano</h4>
-                      <p className="text-white/60 text-sm">
-                        DJ Ricky returns with smooth Afro Piano vibes. Dance to the rhythm of African beats all night long.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
