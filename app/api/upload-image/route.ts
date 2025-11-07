@@ -36,25 +36,44 @@ export async function POST(request: NextRequest) {
     const fileName = `${Date.now()}-${file.name}`;
     const arrayBuffer = await file.arrayBuffer();
 
-    // In production on Netlify, use Netlify Blobs
-    if (process.env.NETLIFY) {
-      console.log("Running on Netlify - using Blobs");
-      const { getStore } = await import("@netlify/blobs");
-      const store = getStore("program-images");
+    // Detect if running on Netlify - check multiple environment variables
+    const isNetlify = process.env.NETLIFY === 'true' ||
+                      process.env.NETLIFY_DEV === 'true' ||
+                      !!process.env.NETLIFY_BUILD_BASE ||
+                      process.env.CONTEXT !== undefined;
 
-      await store.set(fileName, arrayBuffer, {
-        metadata: {
-          contentType: file.type,
-          uploadedAt: new Date().toISOString(),
-        },
-      });
+    console.log("Environment check:", {
+      NETLIFY: process.env.NETLIFY,
+      NETLIFY_DEV: process.env.NETLIFY_DEV,
+      CONTEXT: process.env.CONTEXT,
+      isNetlify
+    });
 
-      const imageUrl = `/api/images/${fileName}`;
-      return NextResponse.json({ success: true, imageUrl });
+    // Try to use Netlify Blobs first if available
+    if (isNetlify || process.env.NODE_ENV === 'production') {
+      try {
+        console.log("Attempting to use Netlify Blobs for image storage");
+        const { getStore } = await import("@netlify/blobs");
+        const store = getStore("program-images");
+
+        await store.set(fileName, arrayBuffer, {
+          metadata: {
+            contentType: file.type,
+            uploadedAt: new Date().toISOString(),
+          },
+        });
+
+        const imageUrl = `/api/images/${fileName}`;
+        console.log("Successfully saved to Netlify Blobs");
+        return NextResponse.json({ success: true, imageUrl });
+      } catch (blobError) {
+        console.error("Netlify Blobs error:", blobError);
+        // Fall through to file system if Blobs fails
+      }
     }
 
-    // For local development, save to public folder
-    console.log("Running locally - saving to public/uploads");
+    // Fallback: Use local file system
+    console.log("Using file system fallback - saving to public/uploads");
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     const filePath = path.join(uploadsDir, fileName);
 
@@ -78,7 +97,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       imageUrl,
-      note: "Local dev mode - saved to /public/uploads",
+      note: "Saved to file system - /public/uploads",
     });
   } catch (error) {
     console.error("Error in upload-image API:", error);

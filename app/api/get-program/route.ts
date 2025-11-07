@@ -4,30 +4,41 @@ import path from "path";
 
 export async function GET() {
   try {
-    // In production on Netlify, use Netlify Blobs via function
-    if (process.env.NETLIFY) {
-      const { getStore } = await import("@netlify/blobs");
-      const store = getStore("programs");
-      const programData = await store.get("current-program", { type: "json" });
+    // Detect if running on Netlify - check multiple environment variables
+    const isNetlify = process.env.NETLIFY === 'true' ||
+                      process.env.NETLIFY_DEV === 'true' ||
+                      !!process.env.NETLIFY_BUILD_BASE ||
+                      process.env.CONTEXT !== undefined;
 
-      if (!programData) {
-        return NextResponse.json({
-          currentWeek: null,
-          previousWeeks: [],
-        });
+    // Try to use Netlify Blobs first if in production or on Netlify
+    if (isNetlify || process.env.NODE_ENV === 'production') {
+      try {
+        const { getStore } = await import("@netlify/blobs");
+        const store = getStore("programs");
+        const programData = await store.get("current-program", { type: "json" });
+
+        if (!programData) {
+          return NextResponse.json({
+            currentWeek: null,
+            previousWeeks: [],
+          });
+        }
+
+        return NextResponse.json(programData);
+      } catch (blobError) {
+        console.error("Netlify Blobs read error:", blobError);
+        // Fall through to file system
       }
-
-      return NextResponse.json(programData);
     }
 
-    // For local development, use file system
+    // Fallback: Use file system (for local development or if Blobs fails)
     const dataPath = path.join(process.cwd(), "data", "program.json");
 
     try {
       const fileContent = await fs.readFile(dataPath, "utf-8");
       const programData = JSON.parse(fileContent);
       return NextResponse.json(programData);
-    } catch (err) {
+    } catch (_err) {
       // File doesn't exist yet, return default
       return NextResponse.json({
         currentWeek: null,

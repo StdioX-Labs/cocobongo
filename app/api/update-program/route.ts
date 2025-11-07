@@ -27,26 +27,45 @@ export async function POST(request: NextRequest) {
     const programData = await request.json();
     console.log("Program data received:", Object.keys(programData));
 
-    // In production on Netlify, use Netlify Blobs
-    if (process.env.NETLIFY) {
-      console.log("Running on Netlify - using Blobs");
-      const { getStore } = await import("@netlify/blobs");
-      const store = getStore("programs");
+    // Detect if running on Netlify - check multiple environment variables
+    const isNetlify = process.env.NETLIFY === 'true' ||
+                      process.env.NETLIFY_DEV === 'true' ||
+                      !!process.env.NETLIFY_BUILD_BASE ||
+                      process.env.CONTEXT !== undefined;
 
-      await store.set("current-program", JSON.stringify(programData), {
-        metadata: {
-          updatedAt: new Date().toISOString(),
-        },
-      });
+    console.log("Environment check:", {
+      NETLIFY: process.env.NETLIFY,
+      NETLIFY_DEV: process.env.NETLIFY_DEV,
+      CONTEXT: process.env.CONTEXT,
+      isNetlify
+    });
 
-      return NextResponse.json({
-        success: true,
-        message: "Program updated successfully",
-      });
+    // Try to use Netlify Blobs first if available
+    if (isNetlify || process.env.NODE_ENV === 'production') {
+      try {
+        console.log("Attempting to use Netlify Blobs");
+        const { getStore } = await import("@netlify/blobs");
+        const store = getStore("programs");
+
+        await store.set("current-program", JSON.stringify(programData), {
+          metadata: {
+            updatedAt: new Date().toISOString(),
+          },
+        });
+
+        console.log("Successfully saved to Netlify Blobs");
+        return NextResponse.json({
+          success: true,
+          message: "Program updated successfully",
+        });
+      } catch (blobError) {
+        console.error("Netlify Blobs error:", blobError);
+        // Fall through to file system if Blobs fails
+      }
     }
 
-    // For local development, use file system
-    console.log("Running locally - using file system");
+    // Fallback: Use file system (for local development or if Blobs fails)
+    console.log("Using file system fallback");
     const dataDir = path.join(process.cwd(), "data");
     const dataPath = path.join(dataDir, "program.json");
 
@@ -56,18 +75,17 @@ export async function POST(request: NextRequest) {
     try {
       await fs.mkdir(dataDir, { recursive: true });
       console.log("Data directory created/verified");
-    } catch {
-      // Directory might already exist
-      console.log("Data directory already exists");
+    } catch (dirError) {
+      console.log("Directory creation error (might already exist):", dirError);
     }
 
     // Write the data to file
     await fs.writeFile(dataPath, JSON.stringify(programData, null, 2));
-    console.log("Data written successfully");
+    console.log("Data written successfully to file system");
 
     return NextResponse.json({
       success: true,
-      message: "Program updated successfully (local dev mode)",
+      message: "Program updated successfully (file system)",
     });
   } catch (error) {
     console.error("Error in update-program API:", error);
