@@ -131,24 +131,50 @@ export default function AdminPortal() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this should be an environment variable
-    const adminPassword = "cocobongo2024";
 
-    if (password === adminPassword) {
-      setIsAuthenticated(true);
-      setAuthError("");
-      localStorage.setItem("adminAuth", password);
-    } else {
-      setAuthError("Invalid password");
+    // Verify password by making a test API call
+    try {
+      const response = await fetch('/api/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setAuthError("");
+        localStorage.setItem("adminAuth", password);
+      } else {
+        setAuthError("Invalid password");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setAuthError("Login failed. Please try again.");
     }
   };
 
   useEffect(() => {
     const savedAuth = localStorage.getItem("adminAuth");
-    if (savedAuth === "cocobongo2024") {
-      setIsAuthenticated(true);
+    if (savedAuth) {
+      // Verify saved password
+      fetch('/api/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: savedAuth }),
+      }).then(response => {
+        if (response.ok) {
+          setPassword(savedAuth);
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem("adminAuth");
+        }
+      });
     }
   }, []);
 

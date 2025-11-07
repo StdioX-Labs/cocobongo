@@ -27,7 +27,17 @@ const handler = async (req: Request, _context: Context) => {
   try {
     // Simple authentication check
     const authHeader = req.headers.get("Authorization");
-    const adminPassword = process.env.ADMIN_PASSWORD || "cocobongo2024";
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      return new Response(JSON.stringify({ error: "Server configuration error" }), {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
 
     if (!authHeader || authHeader !== `Bearer ${adminPassword}`) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

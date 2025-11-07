@@ -8,10 +8,15 @@ export async function POST(request: NextRequest) {
 
     // Check authentication
     const authHeader = request.headers.get("Authorization");
-    const adminPassword = process.env.ADMIN_PASSWORD || "cocobongo2024";
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
     console.log("Auth header present:", !!authHeader);
-    console.log("Expected password length:", adminPassword.length);
+    console.log("Admin password configured:", !!adminPassword);
+
+    if (!adminPassword) {
+      console.log("ADMIN_PASSWORD not configured");
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
 
     if (!authHeader || authHeader !== `Bearer ${adminPassword}`) {
       console.log("Authorization failed");

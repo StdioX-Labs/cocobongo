@@ -26,7 +26,7 @@ The Admin Portal allows you to manage weekly program posters, dates, and daily e
 ## Accessing the Admin Portal
 
 1. Navigate to: `https://your-domain.com/admin`
-2. Enter the admin password (default: `cocobongo2024`)
+2. Enter the admin password (set in environment variables)
 3. Start managing your programs!
 
 ## Setup Instructions
@@ -39,7 +39,7 @@ Create a `.env` file in your project root:
 ADMIN_PASSWORD=your-secure-password
 ```
 
-**Important:** Change the default password before deploying to production!
+**Important:** Set a strong, unique password for production!
 
 ### 2. Netlify Configuration
 
@@ -140,12 +140,39 @@ No external database required! Everything runs on Netlify's infrastructure.
 - Environment variable for password (not in code)
 
 🔐 **Best Practices:**
-- Change default password immediately
-- Use a strong, unique password
-- Don't share admin credentials
+- Set a strong, unique password via environment variable
+- Never commit passwords to version control
+- Use a password manager for secure storage
 - Use HTTPS (automatic with Netlify)
+- Review SECURITY.md for detailed guidelines
+
+## Secret Scanning
+
+Netlify automatically scans your builds for exposed secrets. If the build fails with a secrets scanning error:
+
+1. **Ensure no hardcoded passwords exist** in your code or documentation
+2. **Use environment variables** for all sensitive data
+3. **Check `.env` is in `.gitignore`** (already configured)
+4. **Remove secrets from git history** if accidentally committed
+
+For more details, see: https://ntl.fyi/configure-secrets-scanning
 
 ## Troubleshooting
+
+### "Secrets Scanning Found Instances" Build Error
+This means Netlify detected potential passwords or secrets in your code:
+
+**Solution:**
+1. Ensure `ADMIN_PASSWORD` is set only in Netlify environment variables
+2. Never hardcode passwords in source files
+3. Check that `.env` is listed in `.gitignore`
+4. If you've made the required changes, commit and push:
+   ```bash
+   git add .
+   git commit -m "Remove hardcoded secrets"
+   git push
+   ```
+5. Netlify will automatically rebuild
 
 ### "Failed to save" Error
 - Check your internet connection
