@@ -419,7 +419,7 @@ export default function Home() {
                   </div>
 
                   {/* Poster Image */}
-                  <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center bg-slate-900/40">
+                  <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center bg-slate-900/40 max-h-[600px]">
                     {programData?.posterUrl ? (
                       programData.posterUrl.startsWith('http') ||
                       programData.posterUrl.startsWith('/uploads') ||
@@ -427,7 +427,7 @@ export default function Home() {
                         <img
                           src={programData.posterUrl}
                           alt="Club Cocobongo Weekly Program"
-                          className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
                         <Image
@@ -435,7 +435,7 @@ export default function Home() {
                           alt="Club Cocobongo Weekly Program"
                           width={800}
                           height={1000}
-                          className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700"
                           priority
                         />
                       )
@@ -445,7 +445,7 @@ export default function Home() {
                         alt="Club Cocobongo Weekly Program"
                         width={800}
                         height={1000}
-                        className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700"
                         priority
                       />
                     )}
