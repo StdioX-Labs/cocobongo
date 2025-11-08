@@ -303,7 +303,7 @@ export default function Home() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
                   </span>
-                  <span className="text-amber-400 font-semibold tracking-[0.3em] text-xs uppercase">Diani's Premier Destination</span>
+                  <span className="text-amber-400 font-semibold tracking-[0.3em] text-xs uppercase">Diani&apos;s Premier Destination</span>
                 </div>
               </div>
 
@@ -415,18 +415,18 @@ export default function Home() {
 
                   {/* Poster Image */}
                   <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center bg-slate-900/40">
-                    {programData?.currentWeek?.posterUrl ? (
-                      programData.currentWeek.posterUrl.startsWith('http') ||
-                      programData.currentWeek.posterUrl.startsWith('/uploads') ||
-                      programData.currentWeek.posterUrl.startsWith('/api') ? (
+                    {programData?.posterUrl ? (
+                      programData.posterUrl.startsWith('http') ||
+                      programData.posterUrl.startsWith('/uploads') ||
+                      programData.posterUrl.startsWith('/api') ? (
                         <img
-                          src={programData.currentWeek.posterUrl}
+                          src={programData.posterUrl}
                           alt="Club Cocobongo Weekly Program"
                           className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
                         <Image
-                          src={programData.currentWeek.posterUrl}
+                          src={programData.posterUrl}
                           alt="Club Cocobongo Weekly Program"
                           width={800}
                           height={1000}
@@ -763,7 +763,7 @@ export default function Home() {
                   </h3>
                   <div className="h-px w-16 bg-gradient-to-r from-amber-500/50 to-transparent mx-auto mb-5 group-hover:w-24 transition-all duration-500"></div>
                   <p className="text-white/50 text-[15px] leading-relaxed font-light">
-                    Meticulously crafted libations and the world's finest spirits, curated by our master mixologists
+                    Meticulously crafted libations and the world&apos;s finest spirits, curated by our master mixologists
                   </p>
                 </div>
               </div>
