@@ -524,8 +524,10 @@ export default function Home() {
 
                 {/* Daily Program Cards */}
                 <div className="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                  {dailyPrograms.map((program, index) => {
-                    const dayDate = weekDates.days[index];
+                  {activeDailyPrograms.map((program) => {
+                    // Find the corresponding day index in the week
+                    const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(program.day);
+                    const dayDate = weekDates.days[dayIndex];
                     return (
                       <div
                         key={program.day}
@@ -1165,14 +1167,28 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#menu" className="text-white/60 hover:text-amber-400 transition-colors text-sm">
+                  <Link href="/menu" className="text-white/60 hover:text-amber-400 transition-colors text-sm">
                     Menu
-                  </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/highlights" className="text-white/60 hover:text-amber-400 transition-colors text-sm">
+                    Highlights
+                  </Link>
                 </li>
                 <li>
                   <a href="#about" className="text-white/60 hover:text-amber-400 transition-colors text-sm">
                     About Us
                   </a>
+                </li>
+                <li className="pt-2 border-t border-amber-500/10">
+                  <Link href="/admin" className="text-amber-400/70 hover:text-amber-400 transition-colors text-sm flex items-center gap-2 group">
+                    <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Admin Portal
+                  </Link>
                 </li>
               </ul>
             </div>
