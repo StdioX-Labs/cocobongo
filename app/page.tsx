@@ -414,15 +414,36 @@ export default function Home() {
                   </div>
 
                   {/* Poster Image */}
-                  <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center">
-                    <Image
-                      src="/programs/program.jpg"
-                      alt="Club Cocobongo Weekly Program"
-                      width={800}
-                      height={1000}
-                      className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
-                      priority
-                    />
+                  <div className="relative overflow-hidden rounded-2xl flex-1 flex items-center justify-center bg-slate-900/40">
+                    {programData?.currentWeek?.posterUrl ? (
+                      programData.currentWeek.posterUrl.startsWith('http') ||
+                      programData.currentWeek.posterUrl.startsWith('/uploads') ||
+                      programData.currentWeek.posterUrl.startsWith('/api') ? (
+                        <img
+                          src={programData.currentWeek.posterUrl}
+                          alt="Club Cocobongo Weekly Program"
+                          className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <Image
+                          src={programData.currentWeek.posterUrl}
+                          alt="Club Cocobongo Weekly Program"
+                          width={800}
+                          height={1000}
+                          className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                          priority
+                        />
+                      )
+                    ) : (
+                      <Image
+                        src="/programs/program.jpg"
+                        alt="Club Cocobongo Weekly Program"
+                        width={800}
+                        height={1000}
+                        className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-700"
+                        priority
+                      />
+                    )}
                   </div>
 
                   {/* Footer Section */}
@@ -579,13 +600,14 @@ export default function Home() {
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
-                      <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500">
-                        <div className="relative">
+                      <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500 flex flex-col h-full">
+                        {/* Image Container with Fixed Aspect Ratio */}
+                        <div className="relative w-full aspect-[3/4] overflow-hidden bg-slate-900/40">
                           {posterSrc.startsWith('http') || posterSrc.startsWith('/uploads') || posterSrc.startsWith('/api') ? (
                             <img
                               src={posterSrc}
                               alt={`${program.day} - ${program.title}`}
-                              className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                             />
                           ) : (
                             <Image
@@ -593,22 +615,23 @@ export default function Home() {
                               alt={`${program.day} - ${program.title}`}
                               width={400}
                               height={600}
-                              className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                             />
                           )}
                           <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black text-xs px-3 py-1.5 rounded-full">
                             {program.day.toUpperCase()}
                           </div>
                         </div>
-                        <div className="p-4 space-y-2">
-                          <div className="flex items-center gap-2 text-amber-400 text-sm">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        {/* Content Container with Fixed Height */}
+                        <div className="p-4 space-y-2 flex-1 flex flex-col">
+                          <div className="flex items-center gap-2 text-amber-400 text-sm flex-shrink-0">
+                            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                             </svg>
-                            <span className="font-semibold">{dayDate.formatted.full.split(',')[0]}, {dayDate.formatted.short}</span>
+                            <span className="font-semibold truncate">{dayDate.formatted.full.split(',')[0]}, {dayDate.formatted.short}</span>
                           </div>
-                          <h4 className="text-white font-black text-lg leading-tight">{program.title}</h4>
-                          <p className="text-white/60 text-sm">{program.description}</p>
+                          <h4 className="text-white font-black text-lg leading-tight line-clamp-2 flex-shrink-0">{program.title}</h4>
+                          <p className="text-white/60 text-sm line-clamp-3 flex-1">{program.description}</p>
                         </div>
                       </div>
                     </div>
