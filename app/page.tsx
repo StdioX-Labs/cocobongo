@@ -110,6 +110,11 @@ export default function Home() {
     }
   ];
 
+  // Filter daily programs to show only days with content
+  const activeDailyPrograms = dailyPrograms.filter(program =>
+    program.title || program.host || program.description
+  );
+
   return (
     <div className="min-h-screen bg-black">
       {/* Luxurious Navigation */}
@@ -581,17 +586,22 @@ export default function Home() {
                 <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">DAILY PROGRAMS</span>
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {dailyPrograms.slice(0, 4).map((program, index) => {
-                  const dayDate = weekDates.days[index];
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {activeDailyPrograms.map((program, index) => {
+                  // Find the corresponding day index in the week
+                  const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(program.day);
+                  const dayDate = weekDates.days[dayIndex] || weekDates.days[0];
                   // Default fallback images
                   const defaultImages = [
-                    "/programs/IMG-20251104-WA0033.jpg",
-                    "/programs/IMG-20251104-WA0034.jpg",
-                    "/programs/IMG-20251104-WA0035.jpg",
-                    "/programs/IMG-20251104-WA0036.jpg"
+                    "/programs/IMG-20251104-WA0033.jpg", // Monday
+                    "/programs/IMG-20251104-WA0034.jpg", // Tuesday
+                    "/programs/IMG-20251104-WA0035.jpg", // Wednesday
+                    "/programs/IMG-20251104-WA0036.jpg", // Thursday
+                    "/programs/IMG-20251104-WA0033.jpg", // Friday
+                    "/programs/IMG-20251104-WA0034.jpg", // Saturday
+                    "/programs/IMG-20251104-WA0035.jpg"  // Sunday
                   ];
-                  const posterSrc = program.posterUrl || defaultImages[index];
+                  const posterSrc = program.posterUrl || defaultImages[dayIndex] || defaultImages[0];
 
                   return (
                     <div
