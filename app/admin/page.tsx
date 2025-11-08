@@ -20,6 +20,7 @@ export default function AdminPortal() {
   // Daily program posters
   const [dailyPosterFiles, setDailyPosterFiles] = useState<{ [key: string]: File }>({});
   const [dailyPosterPreviews, setDailyPosterPreviews] = useState<{ [key: string]: string }>({});
+  const [changesSaved, setChangesSaved] = useState(false);
 
   // Get current week dates
   const getCurrentWeekDates = () => {
@@ -391,6 +392,7 @@ export default function AdminPortal() {
       console.log("Save successful:", result);
 
       setSaveStatus("✓ Saved successfully!");
+      setChangesSaved(true); // Mark that changes were saved
       setWeeklyProgram(updatedProgram);
       setPosterFile(null);
       setDailyPosterFiles({});
@@ -498,9 +500,20 @@ export default function AdminPortal() {
             <div className="flex items-center gap-4">
               <Link
                 href="/"
-                className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+                onClick={(e) => {
+                  if (changesSaved) {
+                    e.preventDefault();
+                    // Navigate to homepage and force reload to fetch fresh data
+                    window.location.href = '/';
+                    window.location.reload();
+                  }
+                }}
+                className="text-white/70 hover:text-white text-sm font-medium transition-colors flex items-center gap-2"
               >
-                View Site
+                <span>View Site</span>
+                {changesSaved && (
+                  <span className="inline-flex items-center justify-center w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Changes saved - click to view updated site"></span>
+                )}
               </Link>
               <button
                 onClick={handleLogout}
