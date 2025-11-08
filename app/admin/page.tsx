@@ -418,55 +418,55 @@ export default function AdminPortal() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/20 shadow-2xl">
-            <div className="text-center mb-8">
-              <div className="inline-block relative mb-4">
+        <div className="max-w-md w-full mx-3 sm:mx-0">
+          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-amber-500/20 shadow-2xl">
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="inline-block relative mb-3 sm:mb-4">
                 <Image
                   src="/logo02.png"
                   alt="Club Cocobongo"
-                  width={80}
-                  height={80}
-                  className="object-contain"
+                  width={60}
+                  height={60}
+                  className="object-contain sm:w-[80px] sm:h-[80px]"
                 />
               </div>
-              <h1 className="text-3xl font-black text-white mb-2">Admin Portal</h1>
-              <p className="text-white/60">Enter password to continue</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-white mb-2">Admin Portal</h1>
+              <p className="text-white/60 text-sm sm:text-base">Enter password to continue</p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
+                <label className="block text-white/80 text-xs sm:text-sm font-medium mb-2">
                   Password
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
                   placeholder="Enter admin password"
                   required
                 />
               </div>
 
               {authError && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg sm:rounded-xl p-3 text-red-400 text-xs sm:text-sm">
                   {authError}
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold py-3 rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all duration-300 shadow-lg shadow-amber-500/20"
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all duration-300 shadow-lg shadow-amber-500/20 text-sm sm:text-base"
               >
                 Login
               </button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-4 sm:mt-6 text-center">
               <Link
                 href="/"
-                className="text-amber-400 hover:text-amber-300 text-sm font-medium transition-colors"
+                className="text-amber-400 hover:text-amber-300 text-xs sm:text-sm font-medium transition-colors"
               >
                 ← Back to Home
               </Link>
@@ -481,23 +481,23 @@ export default function AdminPortal() {
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black">
       {/* Header */}
       <nav className="bg-black/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Image
                 src="/logo02.png"
                 alt="Club Cocobongo"
-                width={50}
-                height={50}
-                className="object-contain"
+                width={40}
+                height={40}
+                className="object-contain sm:w-[50px] sm:h-[50px]"
               />
               <div>
-                <h1 className="text-xl font-black text-white">Admin Portal</h1>
-                <p className="text-white/60 text-sm">Program Management</p>
+                <h1 className="text-base sm:text-xl font-black text-white">Admin Portal</h1>
+                <p className="text-white/60 text-xs sm:text-sm hidden sm:block">Program Management</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/"
                 onClick={(e) => {
@@ -508,16 +508,17 @@ export default function AdminPortal() {
                     window.location.reload();
                   }
                 }}
-                className="text-white/70 hover:text-white text-sm font-medium transition-colors flex items-center gap-2"
+                className="text-white/70 hover:text-white text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 sm:gap-2"
               >
-                <span>View Site</span>
+                <span className="hidden sm:inline">View Site</span>
+                <span className="sm:hidden">Site</span>
                 {changesSaved && (
                   <span className="inline-flex items-center justify-center w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Changes saved - click to view updated site"></span>
                 )}
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
+                className="text-red-400 hover:text-red-300 text-xs sm:text-sm font-medium transition-colors"
               >
                 Logout
               </button>
@@ -527,12 +528,12 @@ export default function AdminPortal() {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8 max-w-7xl">
         {weeklyProgram && (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Save Status Bar */}
             {saveStatus && (
-              <div className={`fixed top-24 right-6 z-50 px-6 py-3 rounded-xl shadow-lg backdrop-blur-xl ${
+              <div className={`fixed top-16 sm:top-24 right-2 sm:right-6 left-2 sm:left-auto z-50 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg backdrop-blur-xl text-xs sm:text-base ${
                 saveStatus.includes("✓")
                   ? "bg-green-500/20 border border-green-500/30 text-green-400"
                   : saveStatus.includes("✗")
@@ -544,9 +545,9 @@ export default function AdminPortal() {
             )}
 
             {/* Week Dates */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <h2 className="text-2xl font-bold text-white mb-4">Week Schedule</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Week Schedule</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-white/70 text-sm font-medium mb-2">
                     Start Date (Monday)
@@ -577,24 +578,24 @@ export default function AdminPortal() {
             </div>
 
             {/* Weekly Poster Upload */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <h2 className="text-2xl font-bold text-white mb-4">Weekly Program Poster</h2>
-              <div className="space-y-4">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Weekly Program Poster</h2>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-white/70 text-sm font-medium mb-2">
+                  <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
                     Upload Poster Image
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handlePosterUpload}
-                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
                   />
                 </div>
 
                 {posterPreview && (
-                  <div className="relative w-full max-w-2xl mx-auto">
-                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden border border-white/10">
+                  <div className="relative w-full max-w-xs sm:max-w-2xl mx-auto">
+                    <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-xl overflow-hidden border border-white/10">
                       <img
                         src={posterPreview}
                         alt="Poster preview"
@@ -607,85 +608,85 @@ export default function AdminPortal() {
             </div>
 
             {/* Daily Programs */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <h2 className="text-2xl font-bold text-white mb-6">Daily Programs</h2>
-              <div className="space-y-6">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Daily Programs</h2>
+              <div className="space-y-4 sm:space-y-6">
                 {weeklyProgram.dailyPrograms.map((program, index) => (
                   <div
                     key={program.day}
-                    className="bg-black/40 rounded-xl p-6 border border-white/10 space-y-4"
+                    className="bg-black/40 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10 space-y-3 sm:space-y-4"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold text-amber-400">{program.day}</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-amber-400">{program.day}</h3>
                       <button
                         type="button"
                         onClick={() => clearDayContent(index)}
-                        className="px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-300 text-sm font-medium flex items-center gap-2"
+                        className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-300 text-xs sm:text-sm font-medium flex items-center justify-center sm:justify-start gap-2"
                         title="Clear all content for this day"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         Clear Day
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <label className="block text-white/70 text-sm font-medium mb-2">
+                        <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
                           Event Title
                         </label>
                         <input
                           type="text"
                           value={program.title}
                           onChange={(e) => updateDailyProgram(index, "title", e.target.value)}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
                           placeholder="e.g., Karaoke Night"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-white/70 text-sm font-medium mb-2">
+                        <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
                           Host/DJ
                         </label>
                         <input
                           type="text"
                           value={program.host}
                           onChange={(e) => updateDailyProgram(index, "host", e.target.value)}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
                           placeholder="e.g., DJ Mufasa"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-white/70 text-sm font-medium mb-2">
+                      <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
                         Description
                       </label>
                       <textarea
                         value={program.description}
                         onChange={(e) => updateDailyProgram(index, "description", e.target.value)}
                         rows={3}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors resize-none"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors resize-none"
                         placeholder="Describe the event..."
                       />
                     </div>
 
                     {/* Daily Program Poster Upload */}
                     <div>
-                      <label className="block text-white/70 text-sm font-medium mb-2">
+                      <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
                         Daily Poster Image
                       </label>
                       <input
                         type="file"
                         accept="image/*"
                         onChange={(e) => handleDailyPosterUpload(program.day, e)}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors text-sm"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
                       />
 
                       {/* Preview current or new poster */}
                       {(dailyPosterPreviews[program.day] || program.posterUrl) && (
-                        <div className="mt-3 relative w-full max-w-xs">
+                        <div className="mt-3 relative w-full max-w-xs mx-auto sm:mx-0">
                           <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-white/10">
                             <img
                               src={dailyPosterPreviews[program.day] || program.posterUrl}
@@ -704,15 +705,15 @@ export default function AdminPortal() {
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-white/70 text-sm font-medium">
+                        <label className="block text-white/70 text-xs sm:text-sm font-medium">
                           Highlights
                         </label>
                         <button
                           type="button"
                           onClick={() => addHighlight(index)}
-                          className="text-amber-400 hover:text-amber-300 text-sm font-medium transition-colors"
+                          className="text-amber-400 hover:text-amber-300 text-xs sm:text-sm font-medium transition-colors"
                         >
-                          + Add Highlight
+                          + Add
                         </button>
                       </div>
                       <div className="space-y-2">
@@ -722,13 +723,13 @@ export default function AdminPortal() {
                               type="text"
                               value={highlight}
                               onChange={(e) => updateHighlight(index, hIndex, e.target.value)}
-                              className="flex-1 px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                              className="flex-1 px-3 sm:px-4 py-2 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
                               placeholder="Enter highlight"
                             />
                             <button
                               type="button"
                               onClick={() => removeHighlight(index, hIndex)}
-                              className="px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/30 transition-colors"
+                              className="px-3 sm:px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg sm:rounded-xl hover:bg-red-500/30 transition-colors text-xs sm:text-sm whitespace-nowrap"
                             >
                               Remove
                             </button>
@@ -742,11 +743,11 @@ export default function AdminPortal() {
             </div>
 
             {/* Save Button */}
-            <div className="sticky bottom-6 flex justify-center">
+            <div className="sticky bottom-3 sm:bottom-6 flex justify-center px-3 sm:px-0">
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold px-12 py-4 rounded-xl hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 text-lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold px-8 sm:px-12 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 text-base sm:text-lg"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </button>
