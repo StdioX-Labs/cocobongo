@@ -191,6 +191,15 @@ body {
   }
 }
 
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
 /* Apply animations */
 .animate-fade-in {
   animation: fade-in 1s ease-out forwards;
@@ -252,6 +261,10 @@ body {
 
 .animate-glow {
   animation: glow 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
 }
 
 

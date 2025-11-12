@@ -318,7 +318,7 @@ export default function Home() {
                   <span className="block text-white mb-4">
                     CLUB
                   </span>
-                  <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent animate-bounce">
                     COCOBONGO
                   </span>
                 </h1>
@@ -1278,4 +1278,3 @@ export default function Home() {
     </div>
   );
 }
-
