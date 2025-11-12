@@ -148,7 +148,7 @@ export default function Home() {
 
                 {/* Elegant Typography */}
                 <div className="text-lg lg:text-xl tracking-tight">
-                  <div className="font-bold text-white/90 leading-none tracking-wider transition-colors duration-300 group-hover:text-white">
+                  <div className="font-bold text-white/90 leading-none tracking-wider transition-colors duration-300 group-hover:text-white ">
                     CLUB
                   </div>
                   <div className="font-black bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 bg-clip-text text-transparent leading-none tracking-wide">
@@ -315,7 +315,7 @@ export default function Home() {
               {/* Massive bold typography */}
               <div className="space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                 <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter">
-                  <span className="block text-white mb-4">
+                  <span className="block text-white mb-4 animate-[fadeIn_3s_ease-in-out_infinite]">
                     CLUB
                   </span>
                   <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent animate-bounce">
