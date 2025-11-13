@@ -77,8 +77,8 @@ export default function Home() {
       day: 'Wednesday',
       title: 'Wet & Wild',
       host: 'DJ Ricky',
-      description: 'Mid-week madness with DJ Ricky! Electrifying beats and high-energy vibes.',
-      highlights: ['DJ Ricky', 'Drink specials', 'Dance floor energy']
+      description: 'Mid-week madness with DJ Ricky! Twerk dance competition, electrifying beats and high-energy vibes.',
+      highlights: ['DJ Ricky', 'Twerk Dance', 'Drink specials']
     },
     {
       day: 'Thursday',
@@ -91,8 +91,8 @@ export default function Home() {
       day: 'Friday',
       title: 'Booty Bum Friday',
       host: 'DJ Mufasa & MC Konki',
-      description: 'The legendary weekend kickoff! Hip-hop, dancehall, and Afrobeat all night.',
-      highlights: ['DJ Mufasa & MC Konki', 'Hip-hop & Dancehall', 'VIP service']
+      description: 'The legendary weekend kickoff! Twerk dance night with hip-hop, dancehall, and Afrobeat all night.',
+      highlights: ['DJ Mufasa & MC Konki', 'Twerk Dance', 'VIP service']
     },
     {
       day: 'Saturday',
@@ -407,7 +407,8 @@ export default function Home() {
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-400 to-orange-500 mx-auto mb-6 rounded-full"></div>
             <p className="text-white/60 text-lg font-light">
-              Seven nights a week, unforgettable experiences await. Check out this week&apos;s lineup.
+              Seven nights a week, unforgettable experiences await in <span className="text-amber-400 font-semibold">Diani&apos;s safest club</span>. 
+              Enjoy twerk dance nights, live DJs, and premium entertainment. Check out this week&apos;s lineup.
             </p>
           </div>
 
@@ -936,6 +937,10 @@ export default function Home() {
                 Club Cocobongo has been reborn under new management, bringing you an elevated nightlife experience
                 in the heart of Diani. We&apos;ve reimagined what a premium club should be, combining world-class
                 entertainment, exceptional service, and an atmosphere unlike any other.
+              </p>
+              <p>
+                <span className="text-amber-400 font-semibold">Your safety is our priority.</span> We are the safest club in Diani, 
+                with professional security, well-trained staff, and strict safety protocols to ensure you enjoy your night with complete peace of mind.
               </p>
               <p>
                 From our weekly themed events featuring top DJs to our exquisite food and beverage offerings,
