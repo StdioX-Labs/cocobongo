@@ -315,27 +315,59 @@ export default function Home() {
               {/* Massive bold typography */}
               <div className="space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                 <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter">
-                  <span className="block text-white mb-4 animate-[fadeIn_3s_ease-in-out_infinite]">
-                    CLUB
+                  <span className="block mb-4 inline-flex">
+                    {['C', 'L', 'U', 'B'].map((letter, index) => (
+                      <span
+                        key={index}
+                        className="inline-block text-white hover:scale-125 transition-transform duration-300 cursor-default"
+                        style={{ 
+                          animation: `letter-bounce ${2 + index * 0.3}s ease-in-out infinite`,
+                          animationDelay: `${index * 0.4}s`,
+                          textShadow: '0 0 40px rgba(251, 191, 36, 0.6), 0 0 80px rgba(234, 88, 12, 0.4)'
+                        }}
+                      >
+                        {letter}
+                      </span>
+                    ))}
                   </span>
-                  <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent animate-bounce">
-                    COCOBONGO
+                  <span className="block relative">
+                    <span className="relative inline-flex">
+                      {['C', 'O', 'C', 'O', 'B', 'O', 'N', 'G', 'O'].map((letter, index) => (
+                        <span
+                          key={index}
+                          className="inline-block hover:scale-125 transition-transform duration-300 cursor-default"
+                          style={{ 
+                            animation: `letter-dance ${2.5 + index * 0.2}s ease-in-out infinite`,
+                            animationDelay: `${index * 0.25}s`,
+                            background: 'linear-gradient(to right, #fbbf24, #ea580c, #d97706)',
+                            backgroundSize: '200% auto',
+                            WebkitBackgroundClip: 'text',
+                            backgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                          }}
+                        >
+                          {letter}
+                        </span>
+                      ))}
+                    </span>
                   </span>
                 </h1>
 
                 {/* Elegant divider */}
                 <div className="flex items-center justify-center gap-3">
-                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
-                  <div className="w-2 h-2 rotate-45 bg-amber-500"></div>
-                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent animate-pulse"></div>
+                  <div className="w-2 h-2 rotate-45 bg-amber-500 animate-[spin_3s_linear_infinite]"></div>
+                  <div className="h-0.5 w-20 bg-gradient-to-r from-transparent via-amber-500 to-transparent animate-pulse"></div>
                 </div>
               </div>
 
 
               {/* Call to action buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                <a href="tel:0717535345" className="group relative">
+                <a href="tel:0717535345" className="group relative overflow-hidden rounded-full">
                   <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-full opacity-70 group-hover:opacity-100 blur transition-all duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" style={{ animation: 'shimmer-button 3s infinite', transform: 'translateX(-100%)' }}></div>
                   <div className="relative flex items-center gap-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-black px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 group-hover:scale-105">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
@@ -344,7 +376,8 @@ export default function Home() {
                   </div>
                 </a>
 
-                <Link href="/menu" className="group relative">
+                <Link href="/menu" className="group relative overflow-hidden rounded-full">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/20 to-transparent rounded-full" style={{ animation: 'shimmer-button 3.5s infinite', transform: 'translateX(-100%)' }}></div>
                   <div className="relative flex items-center gap-3 bg-white/5 hover:bg-white/10 border-2 border-white/20 hover:border-amber-500/50 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300">
                     <span>Explore Menu</span>
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
