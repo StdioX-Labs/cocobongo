@@ -16,6 +16,21 @@ interface HighlightItem {
 // Note: DNG files are not supported in browsers - convert to JPG/PNG
 // Supported formats: JPG, JPEG, PNG, GIF, WEBP for images | MP4, WEBM, MOV for videos
 const highlights: HighlightItem[] = [
+  // Twerk Nights
+  {
+    id: 'twerk-1',
+    type: 'video',
+    src: '/highlights/twerk nights/booty.mov',
+    artist: 'Twerk Nights',
+    title: 'Wednesday & Friday Twerk Dance'
+  },
+  {
+    id: 'twerk-2',
+    type: 'image',
+    src: '/highlights/twerk nights/club booty.png',
+    artist: 'Twerk Nights',
+    title: 'Club Twerk Night'
+  },
   // Kaligraph Jones
   {
     id: '1',
