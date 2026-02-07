@@ -906,7 +906,6 @@ export default function AdminPortal() {
                     e.preventDefault();
                     // Navigate to homepage and force reload to fetch fresh data
                     window.location.href = '/';
-                    window.location.reload();
                   }
                 }}
                 className="text-white/70 hover:text-white text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 sm:gap-2"
