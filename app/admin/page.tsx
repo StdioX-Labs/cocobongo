@@ -5,6 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import type { WeeklyProgram, DailyProgram } from "../types/program";
 
+interface HighlightItem {
+  id: string;
+  type: 'image' | 'video';
+  src: string;
+  artist: string;
+  title: string;
+}
+
 export default function AdminPortal() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -21,6 +29,11 @@ export default function AdminPortal() {
   const [dailyPosterFiles, setDailyPosterFiles] = useState<{ [key: string]: File }>({});
   const [dailyPosterPreviews, setDailyPosterPreviews] = useState<{ [key: string]: string }>({});
   const [changesSaved, setChangesSaved] = useState(false);
+
+  // Highlights data
+  const [highlights, setHighlights] = useState<HighlightItem[]>([]);
+  const [highlightFiles, setHighlightFiles] = useState<{ [key: string]: File }>({});
+  const [highlightPreviews, setHighlightPreviews] = useState<{ [key: string]: string }>({});
 
   // Get current week dates
   const getCurrentWeekDates = () => {
@@ -44,8 +57,21 @@ export default function AdminPortal() {
   useEffect(() => {
     if (isAuthenticated) {
       loadCurrentProgram();
+      loadHighlights();
     }
   }, [isAuthenticated]);
+
+  const loadHighlights = async () => {
+    try {
+      const response = await fetch("/api/get-highlights");
+      const data = await response.json();
+      if (data.highlights) {
+        setHighlights(data.highlights);
+      }
+    } catch (error) {
+      console.error("Error loading highlights:", error);
+    }
+  };
 
   const loadCurrentProgram = async () => {
     try {
@@ -300,6 +326,127 @@ export default function AdminPortal() {
       ...weeklyProgram,
       dailyPrograms: updatedPrograms,
     });
+  };
+
+  // Highlights management functions
+  const addHighlightItem = () => {
+    const newHighlight: HighlightItem = {
+      id: Date.now().toString(),
+      type: 'image',
+      src: '',
+      artist: '',
+      title: '',
+    };
+    setHighlights([...highlights, newHighlight]);
+  };
+
+  const removeHighlightItem = (id: string) => {
+    if (!confirm('Are you sure you want to remove this highlight?')) {
+      return;
+    }
+    setHighlights(highlights.filter(h => h.id !== id));
+    // Clean up any pending uploads
+    setHighlightFiles(prev => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
+    setHighlightPreviews(prev => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
+  };
+
+  const updateHighlightField = (id: string, field: keyof HighlightItem, value: string) => {
+    setHighlights(highlights.map(h =>
+      h.id === id ? { ...h, [field]: value } : h
+    ));
+  };
+
+  const handleHighlightFileUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Determine type from file
+      const type = file.type.startsWith('video/') ? 'video' : 'image';
+
+      // Store the file
+      setHighlightFiles(prev => ({ ...prev, [id]: file }));
+
+      // Update highlight type
+      updateHighlightField(id, 'type', type);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHighlightPreviews(prev => ({ ...prev, [id]: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveHighlights = async () => {
+    setLoading(true);
+    setSaveStatus("Saving highlights...");
+
+    try {
+      // Upload any new files to Contabo
+      const updatedHighlights = [...highlights];
+
+      for (let i = 0; i < updatedHighlights.length; i++) {
+        const highlight = updatedHighlights[i];
+        if (highlightFiles[highlight.id]) {
+          setSaveStatus(`Uploading ${highlight.artist || 'highlight'} to cloud...`);
+          const formData = new FormData();
+          formData.append("file", highlightFiles[highlight.id]);
+          formData.append("folder", "highlights");
+
+          const uploadResponse = await fetch("/api/contabo-upload", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${password}`,
+            },
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload ${highlight.artist || 'highlight'}`);
+          }
+
+          const uploadData = await uploadResponse.json();
+          updatedHighlights[i].src = uploadData.url;
+        }
+      }
+
+      // Save to API
+      const response = await fetch("/api/update-highlights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${password}`,
+        },
+        body: JSON.stringify({ highlights: updatedHighlights }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save highlights");
+      }
+
+      setSaveStatus("✓ Highlights saved successfully!");
+      setHighlights(updatedHighlights);
+      setHighlightFiles({});
+      setHighlightPreviews({});
+      setChangesSaved(true);
+
+      setTimeout(() => setSaveStatus(""), 3000);
+    } catch (error) {
+      console.error("Error saving highlights:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      setSaveStatus(`✗ Error: ${errorMessage}`);
+      setTimeout(() => setSaveStatus(""), 5000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -740,6 +887,135 @@ export default function AdminPortal() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Highlights Management Section */}
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Highlights Gallery</h2>
+                <button
+                  type="button"
+                  onClick={addHighlightItem}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all duration-300 text-sm"
+                >
+                  + Add Highlight
+                </button>
+              </div>
+
+              <div className="space-y-4 sm:space-y-6">
+                {highlights.map((highlight) => (
+                  <div
+                    key={highlight.id}
+                    className="bg-black/40 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10 space-y-3 sm:space-y-4"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-bold text-amber-400">
+                        {highlight.artist || 'New Highlight'}
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => removeHighlightItem(highlight.id)}
+                        className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all text-xs sm:text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div>
+                        <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
+                          Artist Name
+                        </label>
+                        <input
+                          type="text"
+                          value={highlight.artist}
+                          onChange={(e) => updateHighlightField(highlight.id, 'artist', e.target.value)}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                          placeholder="e.g., Kaligraph Jones"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={highlight.title}
+                          onChange={(e) => updateHighlightField(highlight.id, 'title', e.target.value)}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                          placeholder="e.g., Live Performance"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-white/70 text-xs sm:text-sm font-medium mb-2">
+                        Upload Media (Image or Video)
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={(e) => handleHighlightFileUpload(highlight.id, e)}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
+                      />
+                      <p className="text-white/50 text-xs mt-1">
+                        Supports: JPG, PNG, GIF, WEBP (max 10MB) | MP4, MOV, WEBM (max 50MB)
+                      </p>
+                    </div>
+
+                    {/* Preview current or new media */}
+                    {(highlightPreviews[highlight.id] || highlight.src) && (
+                      <div className="mt-3 relative w-full max-w-xs mx-auto sm:mx-0">
+                        <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-white/10 bg-black">
+                          {highlight.type === 'video' ? (
+                            <video
+                              src={highlightPreviews[highlight.id] || highlight.src}
+                              className="w-full h-full object-cover"
+                              controls
+                            />
+                          ) : (
+                            <img
+                              src={highlightPreviews[highlight.id] || highlight.src}
+                              alt={highlight.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                          {highlightPreviews[highlight.id] && (
+                            <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                              New
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-center text-white/60 text-xs mt-2">
+                          {highlight.type === 'video' ? '📹 Video' : '🖼️ Image'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {highlights.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-white/60 text-sm">
+                      No highlights added yet. Click "Add Highlight" to get started.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Save Highlights Button */}
+              {highlights.length > 0 && (
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={saveHighlights}
+                    disabled={loading}
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-8 sm:px-12 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-purple-400 hover:to-pink-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 text-base sm:text-lg"
+                  >
+                    {loading ? "Saving Highlights..." : "Save Highlights"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Save Button */}

@@ -12,123 +12,31 @@ interface HighlightItem {
   title: string;
 }
 
-// Highlights data
-// Note: DNG files are not supported in browsers - convert to JPG/PNG
-// Supported formats: JPG, JPEG, PNG, GIF, WEBP for images | MP4, WEBM, MOV for videos
-const highlights: HighlightItem[] = [
-  // Twerk Nights
-  {
-    id: 'twerk-1',
-    type: 'video',
-    src: '/highlights/twerk nights/booty.mov',
-    artist: 'Twerk Nights',
-    title: 'Wednesday & Friday Twerk Dance'
-  },
-  {
-    id: 'twerk-2',
-    type: 'image',
-    src: '/highlights/twerk nights/club booty.png',
-    artist: 'Twerk Nights',
-    title: 'Club Twerk Night'
-  },
-  // Kaligraph Jones
-  {
-    id: '1',
-    type: 'image',
-    src: '/highlights/kaligraph jones/IMG_0186.JPG',
-    artist: 'Kaligraph Jones',
-    title: 'Live Performance'
-  },
-  {
-    id: '2',
-    type: 'video',
-    src: '/highlights/kaligraph jones/IMG_2138.MOV',
-    artist: 'Kaligraph Jones',
-    title: 'Exclusive Show'
-  },
-  {
-    id: '12',
-    type: 'image',
-    src: '/highlights/kaligraph jones/IMG_2932.jpg',
-    artist: 'Masauti',
-    title: 'Behind The Scenes'
-  },
-
-  // Okello Max
-  {
-    id: '3',
-    type: 'video',
-    src: '/highlights/okello max/IMG_2809.MOV',
-    artist: 'Okello Max',
-    title: 'Live at Cocobongo'
-  },
-  {
-    id: '4',
-    type: 'video',
-    src: '/highlights/okello max/IMG_2871.MOV',
-    artist: 'Okello Max',
-    title: 'Unforgettable Performance'
-  },
-  {
-    id: '5',
-    type: 'image',
-    src: '/highlights/okello max/IMG_3270.JPG',
-    artist: 'Okello Max',
-    title: 'Epic Night'
-  },
-
-  // Cocobongo Nights
-  {
-    id: '6',
-    type: 'image',
-    src: '/highlights/cocobongo nights/IMG_0187.JPG',
-    artist: 'Cocobongo Nights',
-    title: 'The Vibe'
-  },
-  {
-    id: '7',
-    type: 'image',
-    src: '/highlights/cocobongo nights/IMG_0238.JPG',
-    artist: 'Cocobongo Nights',
-    title: 'Club Atmosphere'
-  },
-  {
-    id: '8',
-    type: 'video',
-    src: '/highlights/cocobongo nights/IMG_0445.MOV',
-    artist: 'Cocobongo Nights',
-    title: 'Party Energy'
-  },
-  {
-    id: '9',
-    type: 'video',
-    src: '/highlights/cocobongo nights/IMG_1626.MP4',
-    artist: 'Cocobongo Nights',
-    title: 'Dance Floor Action'
-  },
-  {
-    id: '10',
-    type: 'video',
-    src: '/highlights/cocobongo nights/IMG_2796.MOV',
-    artist: 'Cocobongo Nights',
-    title: 'Weekend Vibes'
-  },
-  // IMG_3050.DNG - Not supported (RAW format - convert to JPG to use)
-
-  // Mejja
-  {
-    id: '11',
-    type: 'video',
-    src: '/highlights/mejja/IMG_3294.MP4',
-    artist: 'Mejja',
-    title: 'Live Performance'
-  },
-];
-
 export default function HighlightsPage() {
+  const [highlights, setHighlights] = useState<HighlightItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load highlights from API
+  useEffect(() => {
+    const loadHighlights = async () => {
+      try {
+        const response = await fetch('/api/get-highlights');
+        const data = await response.json();
+        if (data.highlights && data.highlights.length > 0) {
+          setHighlights(data.highlights);
+        }
+      } catch (error) {
+        console.error('Error loading highlights:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadHighlights();
+  }, []);
 
   // Initialize loading states using useMemo to avoid cascading renders
   const initialLoadingStates = useMemo(() => {
@@ -137,11 +45,16 @@ export default function HighlightsPage() {
       states[item.id] = true; // Start with everything loading
     });
     return states;
-  }, []);
+  }, [highlights]);
 
   const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>(initialLoadingStates);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Update loading states when highlights change
+  useEffect(() => {
+    setLoadingStates(initialLoadingStates);
+  }, [initialLoadingStates]);
 
   // Track loading state for each media item
   const setMediaLoading = (id: string, isLoading: boolean) => {
@@ -182,7 +95,7 @@ export default function HighlightsPage() {
   // Auto-play current video
   useEffect(() => {
     const currentVideo = videoRefs.current[currentIndex];
-    if (currentVideo && highlights[currentIndex].type === 'video') {
+    if (currentVideo && highlights[currentIndex]?.type === 'video') {
       currentVideo.currentTime = 0;
 
       // Only play if video is ready
@@ -207,7 +120,7 @@ export default function HighlightsPage() {
         video.pause();
       }
     });
-  }, [currentIndex]);
+  }, [currentIndex, highlights]);
 
   // Handle scroll
   const handleScroll = useCallback((direction: 'up' | 'down') => {
@@ -216,7 +129,7 @@ export default function HighlightsPage() {
     } else if (direction === 'up' && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
-  }, [currentIndex]);
+  }, [currentIndex, highlights.length]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -307,41 +220,86 @@ export default function HighlightsPage() {
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden" ref={containerRef}>
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="flex items-center gap-2 sm:gap-3">
+      {/* Loading State */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <div className="text-center">
+            <div className="inline-block relative mb-4">
               <Image
                 src="/logo02.png"
                 alt="Club Cocobongo"
-                width={40}
-                height={40}
-                className="sm:w-12 sm:h-12"
+                width={80}
+                height={80}
+                className="animate-pulse"
               />
-              <div className="text-sm sm:text-base lg:text-lg">
-                <div className="font-bold text-white/90 leading-none">CLUB</div>
-                <div className="font-black bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent leading-none">
-                  COCOBONGO
-                </div>
-              </div>
-            </Link>
+            </div>
+            <div className="w-12 h-12 border-3 border-white/20 border-t-amber-400 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-white/70 text-sm">Loading highlights...</p>
+          </div>
+        </div>
+      )}
 
+      {/* No Highlights State */}
+      {!isLoading && highlights.length === 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <div className="text-center px-4">
+            <Image
+              src="/logo02.png"
+              alt="Club Cocobongo"
+              width={80}
+              height={80}
+              className="mx-auto mb-4"
+            />
+            <h2 className="text-xl text-white mb-2">No Highlights Yet</h2>
+            <p className="text-white/60 text-sm mb-6">Check back soon for amazing content!</p>
             <Link
               href="/"
-              className="text-white/80 hover:text-white transition-colors text-sm sm:text-base"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Back to Home
             </Link>
           </div>
         </div>
-      </nav>
+      )}
 
-      {/* Highlights Container */}
-      <div className="relative w-full h-full">
-        {highlights.map((item, index) => (
+      {/* Main Content - Only show when highlights are loaded */}
+      {!isLoading && highlights.length > 0 && (
+        <>
+          {/* Navigation Bar */}
+          <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
+            <div className="container mx-auto px-4 sm:px-6">
+              <div className="flex items-center justify-between h-16 lg:h-20">
+                <Link href="/" className="flex items-center gap-2 sm:gap-3">
+                  <Image
+                    src="/logo02.png"
+                    alt="Club Cocobongo"
+                    width={40}
+                    height={40}
+                    className="sm:w-12 sm:h-12"
+                  />
+                  <div className="text-sm sm:text-base lg:text-lg">
+                    <div className="font-bold text-white/90 leading-none">CLUB</div>
+                    <div className="font-black bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent leading-none">
+                      COCOBONGO
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/"
+                  className="text-white/80 hover:text-white transition-colors text-sm sm:text-base"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </nav>
+
+          {/* Highlights Container */}
+          <div className="relative w-full h-full">
+            {highlights.map((item, index) => (
           <div
             key={item.id}
             className={`absolute inset-0 transition-transform duration-500 ease-out ${
@@ -579,6 +537,8 @@ export default function HighlightsPage() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
