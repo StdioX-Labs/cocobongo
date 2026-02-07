@@ -35,6 +35,16 @@ export default function AdminPortal() {
   const [highlightFiles, setHighlightFiles] = useState<{ [key: string]: File }>({});
   const [highlightPreviews, setHighlightPreviews] = useState<{ [key: string]: string }>({});
 
+  // Upload progress tracking
+  const [uploadProgress, setUploadProgress] = useState({
+    isUploading: false,
+    currentFile: '',
+    totalFiles: 0,
+    completedFiles: 0,
+    currentFileName: '',
+    stage: '', // 'uploading', 'saving', 'complete'
+  });
+
   // Get current week dates
   const getCurrentWeekDates = () => {
     const now = new Date();
@@ -387,18 +397,40 @@ export default function AdminPortal() {
 
   const saveHighlights = async () => {
     setLoading(true);
-    setSaveStatus("Saving highlights...");
+    setSaveStatus("Preparing to upload highlights...");
+
+    // Count total files to upload
+    const filesToUpload = Object.keys(highlightFiles).length;
+
+    setUploadProgress({
+      isUploading: true,
+      currentFile: '',
+      totalFiles: filesToUpload,
+      completedFiles: 0,
+      currentFileName: '',
+      stage: 'uploading',
+    });
 
     try {
       // Upload any new files to Contabo
       const updatedHighlights = [...highlights];
+      let uploadedCount = 0;
 
       for (let i = 0; i < updatedHighlights.length; i++) {
         const highlight = updatedHighlights[i];
         if (highlightFiles[highlight.id]) {
+          const file = highlightFiles[highlight.id];
+
+          setUploadProgress(prev => ({
+            ...prev,
+            currentFile: highlight.artist || 'highlight',
+            currentFileName: file.name,
+            completedFiles: uploadedCount,
+          }));
+
           setSaveStatus(`Uploading ${highlight.artist || 'highlight'} to cloud...`);
           const formData = new FormData();
-          formData.append("file", highlightFiles[highlight.id]);
+          formData.append("file", file);
           formData.append("folder", "highlights");
 
           const uploadResponse = await fetch("/api/contabo-upload", {
@@ -415,10 +447,23 @@ export default function AdminPortal() {
 
           const uploadData = await uploadResponse.json();
           updatedHighlights[i].src = uploadData.url;
+          uploadedCount++;
+
+          setUploadProgress(prev => ({
+            ...prev,
+            completedFiles: uploadedCount,
+          }));
         }
       }
 
       // Save to API
+      setUploadProgress(prev => ({
+        ...prev,
+        stage: 'saving',
+      }));
+
+      setSaveStatus("Saving highlights data...");
+
       const response = await fetch("/api/update-highlights", {
         method: "POST",
         headers: {
@@ -432,17 +477,40 @@ export default function AdminPortal() {
         throw new Error("Failed to save highlights");
       }
 
+      setUploadProgress(prev => ({
+        ...prev,
+        stage: 'complete',
+      }));
+
       setSaveStatus("✓ Highlights saved successfully!");
       setHighlights(updatedHighlights);
       setHighlightFiles({});
       setHighlightPreviews({});
       setChangesSaved(true);
 
-      setTimeout(() => setSaveStatus(""), 3000);
+      setTimeout(() => {
+        setSaveStatus("");
+        setUploadProgress({
+          isUploading: false,
+          currentFile: '',
+          totalFiles: 0,
+          completedFiles: 0,
+          currentFileName: '',
+          stage: '',
+        });
+      }, 3000);
     } catch (error) {
       console.error("Error saving highlights:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       setSaveStatus(`✗ Error: ${errorMessage}`);
+      setUploadProgress({
+        isUploading: false,
+        currentFile: '',
+        totalFiles: 0,
+        completedFiles: 0,
+        currentFileName: '',
+        stage: '',
+      });
       setTimeout(() => setSaveStatus(""), 5000);
     } finally {
       setLoading(false);
@@ -453,18 +521,39 @@ export default function AdminPortal() {
     if (!weeklyProgram) return;
 
     setLoading(true);
-    setSaveStatus("Saving...");
+    setSaveStatus("Preparing to save...");
+
+    // Count total files to upload
+    const filesToUpload = (posterFile ? 1 : 0) + Object.keys(dailyPosterFiles).length;
+
+    setUploadProgress({
+      isUploading: true,
+      currentFile: '',
+      totalFiles: filesToUpload,
+      completedFiles: 0,
+      currentFileName: '',
+      stage: 'uploading',
+    });
 
     try {
       let posterUrl = weeklyProgram.posterUrl;
+      let uploadedCount = 0;
 
-      // Upload weekly poster if a new one was selected
+      // Upload weekly poster if a new one was selected - USE CONTABO
       if (posterFile) {
-        setSaveStatus("Uploading weekly poster...");
+        setUploadProgress(prev => ({
+          ...prev,
+          currentFile: 'Weekly Poster',
+          currentFileName: posterFile.name,
+          completedFiles: uploadedCount,
+        }));
+
+        setSaveStatus("Uploading weekly poster to cloud...");
         const formData = new FormData();
         formData.append("file", posterFile);
+        formData.append("folder", "event-posters");
 
-        const uploadResponse = await fetch("/api/upload-image", {
+        const uploadResponse = await fetch("/api/contabo-upload", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${password}`,
@@ -477,20 +566,36 @@ export default function AdminPortal() {
         }
 
         const uploadData = await uploadResponse.json();
-        posterUrl = uploadData.imageUrl;
+        posterUrl = uploadData.url;
+        uploadedCount++;
+
+        setUploadProgress(prev => ({
+          ...prev,
+          completedFiles: uploadedCount,
+        }));
       }
 
-      // Upload daily posters if new ones were selected
+      // Upload daily posters if new ones were selected - USE CONTABO
       const updatedDailyPrograms = [...weeklyProgram.dailyPrograms];
 
       for (let i = 0; i < updatedDailyPrograms.length; i++) {
         const day = updatedDailyPrograms[i].day;
         if (dailyPosterFiles[day]) {
-          setSaveStatus(`Uploading ${day} poster...`);
-          const formData = new FormData();
-          formData.append("file", dailyPosterFiles[day]);
+          const file = dailyPosterFiles[day];
 
-          const uploadResponse = await fetch("/api/upload-image", {
+          setUploadProgress(prev => ({
+            ...prev,
+            currentFile: `${day} Poster`,
+            currentFileName: file.name,
+            completedFiles: uploadedCount,
+          }));
+
+          setSaveStatus(`Uploading ${day} poster to cloud...`);
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("folder", "event-posters");
+
+          const uploadResponse = await fetch("/api/contabo-upload", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${password}`,
@@ -503,9 +608,20 @@ export default function AdminPortal() {
           }
 
           const uploadData = await uploadResponse.json();
-          updatedDailyPrograms[i].posterUrl = uploadData.imageUrl;
+          updatedDailyPrograms[i].posterUrl = uploadData.url;
+          uploadedCount++;
+
+          setUploadProgress(prev => ({
+            ...prev,
+            completedFiles: uploadedCount,
+          }));
         }
       }
+
+      setUploadProgress(prev => ({
+        ...prev,
+        stage: 'saving',
+      }));
 
       setSaveStatus("Saving program data...");
 
@@ -538,6 +654,11 @@ export default function AdminPortal() {
       const result = await response.json();
       console.log("Save successful:", result);
 
+      setUploadProgress(prev => ({
+        ...prev,
+        stage: 'complete',
+      }));
+
       setSaveStatus("✓ Saved successfully!");
       setChangesSaved(true); // Mark that changes were saved
       setWeeklyProgram(updatedProgram);
@@ -545,11 +666,29 @@ export default function AdminPortal() {
       setDailyPosterFiles({});
       setDailyPosterPreviews({});
 
-      setTimeout(() => setSaveStatus(""), 3000);
+      setTimeout(() => {
+        setSaveStatus("");
+        setUploadProgress({
+          isUploading: false,
+          currentFile: '',
+          totalFiles: 0,
+          completedFiles: 0,
+          currentFileName: '',
+          stage: '',
+        });
+      }, 3000);
     } catch (error) {
       console.error("Error saving program:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       setSaveStatus(`✗ Error: ${errorMessage}`);
+      setUploadProgress({
+        isUploading: false,
+        currentFile: '',
+        totalFiles: 0,
+        completedFiles: 0,
+        currentFileName: '',
+        stage: '',
+      });
       setTimeout(() => setSaveStatus(""), 5000);
     } finally {
       setLoading(false);
@@ -626,6 +765,121 @@ export default function AdminPortal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black">
+      {/* Upload Progress Modal */}
+      {uploadProgress.isUploading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-amber-500/30 shadow-2xl max-w-md w-full mx-4">
+            {/* Warning Banner */}
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+              <div className="flex items-start gap-3">
+                <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <h3 className="text-red-400 font-bold text-sm mb-1">⚠️ Upload in Progress</h3>
+                  <p className="text-red-300/80 text-xs leading-relaxed">
+                    <strong>Do not close this window!</strong> Closing or refreshing will cancel the upload and you may lose your progress.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Upload Status */}
+            <div className="text-center mb-6">
+              {uploadProgress.stage === 'uploading' && (
+                <>
+                  <div className="inline-block relative mb-4">
+                    <div className="w-20 h-20 border-4 border-white/10 border-t-amber-400 rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg className="w-10 h-10 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-white font-bold text-xl mb-2">
+                    Uploading to Cloud...
+                  </h3>
+                  <p className="text-amber-400 text-sm font-medium mb-1">
+                    {uploadProgress.currentFile}
+                  </p>
+                  <p className="text-white/50 text-xs truncate px-4">
+                    {uploadProgress.currentFileName}
+                  </p>
+                </>
+              )}
+
+              {uploadProgress.stage === 'saving' && (
+                <>
+                  <div className="inline-block relative mb-4">
+                    <div className="w-20 h-20 border-4 border-white/10 border-t-green-400 rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg className="w-10 h-10 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-white font-bold text-xl mb-2">
+                    Saving Data...
+                  </h3>
+                  <p className="text-green-400 text-sm">
+                    Almost done!
+                  </p>
+                </>
+              )}
+
+              {uploadProgress.stage === 'complete' && (
+                <>
+                  <div className="inline-block relative mb-4">
+                    <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center">
+                      <svg className="w-12 h-12 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-white font-bold text-xl mb-2">
+                    ✓ Upload Complete!
+                  </h3>
+                  <p className="text-green-400 text-sm">
+                    Your content has been saved successfully
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Progress Bar */}
+            {uploadProgress.totalFiles > 0 && uploadProgress.stage !== 'complete' && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-white/60">
+                  <span>Progress</span>
+                  <span>{uploadProgress.completedFiles} / {uploadProgress.totalFiles} files</span>
+                </div>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500"
+                    style={{ width: `${(uploadProgress.completedFiles / uploadProgress.totalFiles) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+
+            {/* Tips */}
+            <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <h4 className="text-blue-400 font-semibold text-xs mb-1">💡 Pro Tip</h4>
+                  <p className="text-blue-300/80 text-xs leading-relaxed">
+                    For faster uploads, use smaller file sizes. Compress images to under 5MB and videos under 20MB before uploading.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <nav className="bg-black/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
@@ -738,6 +992,12 @@ export default function AdminPortal() {
                     onChange={handlePosterUpload}
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
                   />
+                  <p className="text-white/50 text-xs mt-2 flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <span>Recommended: Under 5MB for faster uploads (Max: 10MB)</span>
+                  </p>
                 </div>
 
                 {posterPreview && (
@@ -830,6 +1090,9 @@ export default function AdminPortal() {
                         onChange={(e) => handleDailyPosterUpload(program.day, e)}
                         className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
                       />
+                      <p className="text-white/50 text-xs mt-1.5">
+                        💡 Tip: Keep under 5MB for faster uploads
+                      </p>
 
                       {/* Preview current or new poster */}
                       {(dailyPosterPreviews[program.day] || program.posterUrl) && (
@@ -959,9 +1222,17 @@ export default function AdminPortal() {
                         onChange={(e) => handleHighlightFileUpload(highlight.id, e)}
                         className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-black/40 border border-white/10 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 file:cursor-pointer focus:outline-none focus:border-amber-500/50 transition-colors"
                       />
-                      <p className="text-white/50 text-xs mt-1">
-                        Supports: JPG, PNG, GIF, WEBP (max 10MB) | MP4, MOV, WEBM (max 50MB)
-                      </p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-white/50 text-xs">
+                          Supports: JPG, PNG, GIF, WEBP (max 10MB) | MP4, MOV, WEBM (max 50MB)
+                        </p>
+                        <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                          </svg>
+                          <span>💡 Images under 5MB, videos under 20MB upload faster</span>
+                        </p>
+                      </div>
                     </div>
 
                     {/* Preview current or new media */}
