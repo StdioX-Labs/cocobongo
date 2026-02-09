@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Contabo File Permissions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            display: block;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            display: block;
+        }
+
+        .status.loading {
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+            display: block;
+        }
+
+        .results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .file-item {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-item.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+        }
+
+        .file-item.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+        }
+
+        .folder-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .folder-buttons button {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Contabo File Permissions</h1>
+        <p>This tool will update the ACL (Access Control List) for all files in your Contabo storage to make them publicly accessible. This fixes the 401 Unauthorized errors.</p>
+
+        <div class="input-group">
+            <label for="password">Admin Password</label>
+            <input type="password" id="password" placeholder="Enter admin password">
+        </div>
+
+        <div class="folder-buttons">
+            <button onclick="fixFolder('')">Fix All Files</button>
+            <button onclick="fixFolder('event-posters')">Fix Event Posters</button>
+            <button onclick="fixFolder('highlights')">Fix Highlights</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="results" id="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function fixFolder(folder) {
+            const password = document.getElementById('password').value;
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            if (!password) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Please enter admin password';
+                return;
+            }
+
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = `🔄 Fixing permissions${folder ? ` for ${folder}` : ''}... This may take a few minutes.`;
+            resultsDiv.style.display = 'none';
+            resultsDiv.innerHTML = '';
+
+            try {
+                const url = folder ? `/api/fix-contabo-acl?folder=${folder}` : '/api/fix-contabo-acl';
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${password}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `✓ ${data.message}`;
+
+                    if (data.results && data.results.files) {
+                        resultsDiv.style.display = 'block';
+                        resultsDiv.innerHTML = '<strong>Results:</strong>';
+
+                        data.results.files.forEach(file => {
+                            const fileDiv = document.createElement('div');
+                            fileDiv.className = `file-item ${file.status}`;
+                            fileDiv.textContent = file.status === 'success'
+                                ? `✓ ${file.key}`
+                                : `✗ ${file.key}: ${file.error}`;
+                            resultsDiv.appendChild(fileDiv);
+                        });
+                    }
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `✗ Error: ${data.error || 'Failed to fix permissions'}`;
+
+                    if (data.results && data.results.errors) {
+                        resultsDiv.style.display = 'block';
+                        resultsDiv.innerHTML = '<strong>Errors:</strong>';
+                        data.results.errors.forEach(error => {
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'file-item error';
+                            errorDiv.textContent = error;
+                            resultsDiv.appendChild(errorDiv);
+                        });
+                    }
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `✗ Network error: ${error.message}`;
+            } finally {
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>

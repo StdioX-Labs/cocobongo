@@ -12,17 +12,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, PutObjectAclCommand, ObjectCannedACL } from '@aws-sdk/client-s3';
 
 // Contabo S3 Configuration
 const S3_ACCESS_KEY = '62f302ee2a6bdec56870da3b3a3e7127';
 const S3_SECRET_KEY = '03d389951f566e189c3ce0e7c54d122c';
 const S3_ENDPOINT = 'https://eu2.contabostorage.com';
 const S3_BUCKET_NAME = 'bv-kenya';
-const S3_BUCKET_FULL = 'FQy4HArVdBbZ87AHrbfdhSXRgyE5NUbrh6GaL8enMUeh:bv-kenya';
+const S3_BUCKET_FULL = 'b418dbb4d7c942e5b311c172a41d1db8:bv-kenya';
 const S3_REGION = 'eu-central-1';
 
-// Initialize S3 Client
+// Initialize S3 Client (matching Python script configuration)
 const s3Client = new S3Client({
   region: S3_REGION,
   endpoint: S3_ENDPOINT,
@@ -91,18 +91,31 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Contabo S3
+    // Upload to Contabo S3 (matching Python script's upload configuration)
     const uploadCommand = new PutObjectCommand({
       Bucket: S3_BUCKET_NAME,
       Key: fileName,
       Body: buffer,
       ContentType: file.type,
-      ACL: 'public-read',
+      CacheControl: 'public, max-age=31536000',
     });
 
     await s3Client.send(uploadCommand);
 
-    // Construct public URL
+    // Set ACL separately (some S3-compatible services prefer this approach)
+    try {
+      const aclCommand = new PutObjectAclCommand({
+        Bucket: S3_BUCKET_NAME,
+        Key: fileName,
+        ACL: 'public-read' as ObjectCannedACL,
+      });
+      await s3Client.send(aclCommand);
+    } catch (aclError) {
+      console.warn('ACL setting failed (file uploaded but may not be public):', aclError);
+      // Continue anyway - the file is uploaded
+    }
+
+    // Construct public URL (matching Python script's URL format)
     const publicUrl = `${S3_ENDPOINT}/${S3_BUCKET_FULL}/${fileName}`;
 
     return NextResponse.json({
